@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -10,6 +11,10 @@ interface NavbarProps {
 
 const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  // Get prop firms from location state or empty array
+  const propFirms = location.state?.propFirms || [];
 
   return (
     <nav className="bg-slate-900/95 backdrop-blur-sm border-b border-blue-500/20 sticky top-0 z-50">
@@ -17,24 +22,32 @@ const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                 PropFirmHub
-              </span>
+              </Link>
             </div>
             
             <div className="hidden md:ml-10 md:flex md:space-x-8">
-              <a href="#home" className="text-gray-300 hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors">
+              <Link to="/" className="text-gray-300 hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors">
                 Home
-              </a>
-              <a href="#firms" className="text-gray-300 hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors">
+              </Link>
+              <Link 
+                to="/propfirms" 
+                state={{ propFirms }}
+                className="text-gray-300 hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors"
+              >
                 All Firms
-              </a>
+              </Link>
               <a href="#reviews" className="text-gray-300 hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors">
                 Reviews
               </a>
-              <a href="#compare" className="text-gray-300 hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors">
+              <Link 
+                to="/compare" 
+                state={{ propFirms }}
+                className="text-gray-300 hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors"
+              >
                 Compare
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -67,18 +80,26 @@ const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-slate-800/95 backdrop-blur-sm border-t border-blue-500/20">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <a href="#home" className="block px-3 py-2 text-gray-300 hover:text-blue-400 transition-colors">
+            <Link to="/" className="block px-3 py-2 text-gray-300 hover:text-blue-400 transition-colors">
               Home
-            </a>
-            <a href="#firms" className="block px-3 py-2 text-gray-300 hover:text-blue-400 transition-colors">
+            </Link>
+            <Link 
+              to="/propfirms" 
+              state={{ propFirms }}
+              className="block px-3 py-2 text-gray-300 hover:text-blue-400 transition-colors"
+            >
               All Firms
-            </a>
+            </Link>
             <a href="#reviews" className="block px-3 py-2 text-gray-300 hover:text-blue-400 transition-colors">
               Reviews
             </a>
-            <a href="#compare" className="block px-3 py-2 text-gray-300 hover:text-blue-400 transition-colors">
+            <Link 
+              to="/compare" 
+              state={{ propFirms }}
+              className="block px-3 py-2 text-gray-300 hover:text-blue-400 transition-colors"
+            >
               Compare
-            </a>
+            </Link>
             <div className="border-t border-gray-700 pt-2">
               <Button
                 variant="ghost"

@@ -11,4 +11,12 @@ export interface PropFirm {
   description: string;
   features: string[];
   image: string;
+  profitSplit: number;
+  payoutRate: number;
+  fundingAmount: string;
+  userReviewCount: number;
+  pros: string[];
+  cons: string[];
+  affiliateUrl: string;
+  brand: string;
 }

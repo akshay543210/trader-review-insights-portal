@@ -1,4 +1,5 @@
 
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +11,9 @@ interface PropFirmCardProps {
 }
 
 const PropFirmCard = ({ firm, index }: PropFirmCardProps) => {
+  const location = useLocation();
+  const propFirms = location.state?.propFirms || [];
+
   const categoryColors = {
     beginner: 'bg-green-500/20 text-green-400 border-green-500/30',
     intermediate: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
@@ -17,6 +21,18 @@ const PropFirmCard = ({ firm, index }: PropFirmCardProps) => {
   };
 
   const discountPercentage = Math.round(((firm.originalPrice - firm.price) / firm.originalPrice) * 100);
+
+  const handleGetStarted = () => {
+    window.open(firm.affiliateUrl, '_blank');
+  };
+
+  const handleLearnMore = () => {
+    window.location.href = `/propfirm/${firm.id}`;
+  };
+
+  const handleViewReviews = () => {
+    window.location.href = `/reviews/${firm.id}`;
+  };
 
   return (
     <Card 
@@ -63,6 +79,16 @@ const PropFirmCard = ({ firm, index }: PropFirmCardProps) => {
             <span className="text-gray-400">Trust Rating</span>
             <span className="text-green-400 font-semibold">{firm.trustRating}/10</span>
           </div>
+
+          <div className="flex justify-between items-center">
+            <span className="text-gray-400">Profit Split</span>
+            <span className="text-blue-400 font-semibold">{firm.profitSplit}%</span>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <span className="text-gray-400">Payout Rate</span>
+            <span className="text-purple-400 font-semibold">{firm.payoutRate}%</span>
+          </div>
         </div>
         
         <div className="mt-4">
@@ -78,25 +104,28 @@ const PropFirmCard = ({ firm, index }: PropFirmCardProps) => {
         </div>
       </CardContent>
 
-      <CardFooter className="gap-2">
-        <Button 
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white transition-all hover:scale-105"
-          onClick={() => {
-            console.log('Get Started clicked for:', firm.name);
-            // Here you would typically redirect to the prop firm's website or sign-up page
-          }}
-        >
-          Get Started
-        </Button>
+      <CardFooter className="gap-2 flex-col">
+        <div className="flex gap-2 w-full">
+          <Button 
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white transition-all hover:scale-105"
+            onClick={handleGetStarted}
+          >
+            Get Started
+          </Button>
+          <Button 
+            variant="outline"
+            className="flex-1 border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-slate-900 transition-all"
+            onClick={handleLearnMore}
+          >
+            Learn More
+          </Button>
+        </div>
         <Button 
           variant="outline"
-          className="flex-1 border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-slate-900 transition-all"
-          onClick={() => {
-            console.log('Learn More clicked for:', firm.name);
-            // Here you would typically show more details or navigate to a detailed page
-          }}
+          className="w-full border-green-400 text-green-400 hover:bg-green-400 hover:text-slate-900 transition-all"
+          onClick={handleViewReviews}
         >
-          Learn More
+          View Reviews
         </Button>
       </CardFooter>
     </Card>

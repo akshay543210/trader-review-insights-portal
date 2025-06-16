@@ -1,7 +1,19 @@
 
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const Hero = () => {
+  const location = useLocation();
+  const propFirms = location.state?.propFirms || [];
+
+  const navigateToAllFirms = () => {
+    window.location.href = '/propfirms';
+  };
+
+  const navigateToCompare = () => {
+    window.location.href = '/compare';
+  };
+
   return (
     <section id="home" className="relative py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto text-center">
@@ -23,7 +35,7 @@ const Hero = () => {
             <Button 
               size="lg"
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg transition-all hover:scale-105"
-              onClick={() => document.getElementById('firms')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={navigateToAllFirms}
             >
               Explore All Firms
             </Button>
@@ -31,7 +43,7 @@ const Hero = () => {
               size="lg"
               variant="outline"
               className="border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-slate-900 px-8 py-3 text-lg transition-all hover:scale-105"
-              onClick={() => document.getElementById('compare')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={navigateToCompare}
             >
               Compare Firms
             </Button>
