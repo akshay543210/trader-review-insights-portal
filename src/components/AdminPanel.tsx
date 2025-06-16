@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +29,15 @@ const AdminPanel = ({ propFirms, onAdd, onUpdate, onDelete }: AdminPanelProps) =
     trustRating: 0,
     description: '',
     features: '',
-    image: '/placeholder.svg'
+    image: '/placeholder.svg',
+    profitSplit: 0,
+    payoutRate: 0,
+    fundingAmount: '',
+    userReviewCount: 0,
+    pros: '',
+    cons: '',
+    affiliateUrl: '',
+    brand: ''
   });
 
   const resetForm = () => {
@@ -42,7 +51,15 @@ const AdminPanel = ({ propFirms, onAdd, onUpdate, onDelete }: AdminPanelProps) =
       trustRating: 0,
       description: '',
       features: '',
-      image: '/placeholder.svg'
+      image: '/placeholder.svg',
+      profitSplit: 0,
+      payoutRate: 0,
+      fundingAmount: '',
+      userReviewCount: 0,
+      pros: '',
+      cons: '',
+      affiliateUrl: '',
+      brand: ''
     });
     setEditingFirm(null);
   };
@@ -52,7 +69,9 @@ const AdminPanel = ({ propFirms, onAdd, onUpdate, onDelete }: AdminPanelProps) =
     
     const firmData = {
       ...formData,
-      features: formData.features.split(',').map(f => f.trim())
+      features: formData.features.split(',').map(f => f.trim()),
+      pros: formData.pros.split(',').map(f => f.trim()),
+      cons: formData.cons.split(',').map(f => f.trim())
     };
 
     if (editingFirm) {
@@ -83,7 +102,15 @@ const AdminPanel = ({ propFirms, onAdd, onUpdate, onDelete }: AdminPanelProps) =
       trustRating: firm.trustRating,
       description: firm.description,
       features: firm.features.join(', '),
-      image: firm.image
+      image: firm.image,
+      profitSplit: firm.profitSplit,
+      payoutRate: firm.payoutRate,
+      fundingAmount: firm.fundingAmount,
+      userReviewCount: firm.userReviewCount,
+      pros: firm.pros.join(', '),
+      cons: firm.cons.join(', '),
+      affiliateUrl: firm.affiliateUrl,
+      brand: firm.brand
     });
     setEditingFirm(firm);
   };
@@ -115,13 +142,24 @@ const AdminPanel = ({ propFirms, onAdd, onUpdate, onDelete }: AdminPanelProps) =
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4 max-h-96 overflow-y-auto">
                 <div>
                   <Label htmlFor="name" className="text-gray-300">Firm Name</Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    className="bg-slate-700 border-blue-500/20 text-white"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="brand" className="text-gray-300">Brand</Label>
+                  <Input
+                    id="brand"
+                    value={formData.brand}
+                    onChange={(e) => setFormData({...formData, brand: e.target.value})}
                     className="bg-slate-700 border-blue-500/20 text-white"
                     required
                   />
@@ -179,6 +217,47 @@ const AdminPanel = ({ propFirms, onAdd, onUpdate, onDelete }: AdminPanelProps) =
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
+                    <Label htmlFor="profitSplit" className="text-gray-300">Profit Split (%)</Label>
+                    <Input
+                      id="profitSplit"
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={formData.profitSplit}
+                      onChange={(e) => setFormData({...formData, profitSplit: Number(e.target.value)})}
+                      className="bg-slate-700 border-blue-500/20 text-white"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="payoutRate" className="text-gray-300">Payout Rate (%)</Label>
+                    <Input
+                      id="payoutRate"
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={formData.payoutRate}
+                      onChange={(e) => setFormData({...formData, payoutRate: Number(e.target.value)})}
+                      className="bg-slate-700 border-blue-500/20 text-white"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="fundingAmount" className="text-gray-300">Funding Amount</Label>
+                  <Input
+                    id="fundingAmount"
+                    value={formData.fundingAmount}
+                    onChange={(e) => setFormData({...formData, fundingAmount: e.target.value})}
+                    className="bg-slate-700 border-blue-500/20 text-white"
+                    placeholder="e.g., $100,000"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
                     <Label htmlFor="reviewScore" className="text-gray-300">Review Score (1-5)</Label>
                     <Input
                       id="reviewScore"
@@ -206,6 +285,31 @@ const AdminPanel = ({ propFirms, onAdd, onUpdate, onDelete }: AdminPanelProps) =
                       required
                     />
                   </div>
+                  <div>
+                    <Label htmlFor="userReviewCount" className="text-gray-300">User Reviews</Label>
+                    <Input
+                      id="userReviewCount"
+                      type="number"
+                      min="0"
+                      value={formData.userReviewCount}
+                      onChange={(e) => setFormData({...formData, userReviewCount: Number(e.target.value)})}
+                      className="bg-slate-700 border-blue-500/20 text-white"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="affiliateUrl" className="text-gray-300">Affiliate URL</Label>
+                  <Input
+                    id="affiliateUrl"
+                    type="url"
+                    value={formData.affiliateUrl}
+                    onChange={(e) => setFormData({...formData, affiliateUrl: e.target.value})}
+                    className="bg-slate-700 border-blue-500/20 text-white"
+                    placeholder="https://..."
+                    required
+                  />
                 </div>
 
                 <div>
@@ -227,6 +331,30 @@ const AdminPanel = ({ propFirms, onAdd, onUpdate, onDelete }: AdminPanelProps) =
                     onChange={(e) => setFormData({...formData, features: e.target.value})}
                     className="bg-slate-700 border-blue-500/20 text-white"
                     placeholder="Feature 1, Feature 2, Feature 3"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="pros" className="text-gray-300">Pros (comma separated)</Label>
+                  <Textarea
+                    id="pros"
+                    value={formData.pros}
+                    onChange={(e) => setFormData({...formData, pros: e.target.value})}
+                    className="bg-slate-700 border-blue-500/20 text-white"
+                    placeholder="Pro 1, Pro 2, Pro 3"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="cons" className="text-gray-300">Cons (comma separated)</Label>
+                  <Textarea
+                    id="cons"
+                    value={formData.cons}
+                    onChange={(e) => setFormData({...formData, cons: e.target.value})}
+                    className="bg-slate-700 border-blue-500/20 text-white"
+                    placeholder="Con 1, Con 2, Con 3"
                     required
                   />
                 </div>
