@@ -15,7 +15,7 @@ const Comparison = () => {
   const [isAdminMode, setIsAdminMode] = useState(false);
 
   const handleAddFirm = (firm: PropFirm) => {
-    if (selectedFirms.length < 4 && !selectedFirms.find(f => f.id === firm.id)) {
+    if (selectedFirms.length < 3 && !selectedFirms.find(f => f.id === firm.id)) {
       setSelectedFirms([...selectedFirms, firm]);
     }
   };
@@ -32,7 +32,7 @@ const Comparison = () => {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4">Compare Prop Firms</h1>
           <p className="text-xl text-gray-300 mb-8">
-            Select up to 4 prop firms to compare side by side
+            Select up to 3 firms to compare their features side by side
           </p>
         </div>
 

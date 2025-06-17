@@ -9,6 +9,8 @@ import AllPropFirms from "./pages/AllPropFirms";
 import Comparison from "./pages/Comparison";
 import PropFirmDetail from "./pages/PropFirmDetail";
 import Reviews from "./pages/Reviews";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +27,8 @@ const App = () => (
           <Route path="/compare" element={<Comparison />} />
           <Route path="/propfirm/:id" element={<PropFirmDetail />} />
           <Route path="/reviews/:id" element={<Reviews />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/admin-dashboard-2024" element={<AdminDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
