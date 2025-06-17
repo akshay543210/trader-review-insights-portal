@@ -1,12 +1,21 @@
 
 import { useParams, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { Star, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Star, ThumbsUp, ThumbsDown, Trophy, ChevronRight } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { PropFirm } from "../types";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
 
 const Reviews = () => {
   const { id } = useParams();
@@ -15,6 +24,10 @@ const Reviews = () => {
   const firm = propFirms.find((f: PropFirm) => f.id === parseInt(id || '0'));
   
   const [isAdminMode, setIsAdminMode] = useState(false);
+
+  // Sort prop firms by review score for leaderboard
+  const rankedFirms = [...propFirms].sort((a, b) => b.reviewScore - a.reviewScore);
+  const firmRank = rankedFirms.findIndex(f => f.id === firm?.id) + 1;
 
   if (!firm) {
     return (
@@ -33,9 +46,36 @@ const Reviews = () => {
       <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
       
       <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb */}
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/" className="text-blue-400 hover:text-blue-300">
+                Home
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator>
+              <ChevronRight className="h-4 w-4 text-gray-400" />
+            </BreadcrumbSeparator>
+            <BreadcrumbItem>
+              <BreadcrumbPage className="text-gray-300">Reviews</BreadcrumbPage>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator>
+              <ChevronRight className="h-4 w-4 text-gray-400" />
+            </BreadcrumbSeparator>
+            <BreadcrumbItem>
+              <BreadcrumbPage className="text-gray-300">{firm.name} Review</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4">{firm.name} Reviews</h1>
           <p className="text-xl text-gray-300">Detailed reviews and analysis</p>
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <Trophy className="h-5 w-5 text-yellow-400" />
+            <span className="text-yellow-400 font-semibold">Ranked #{firmRank} out of {rankedFirms.length} prop firms</span>
+          </div>
         </div>
 
         {/* Overall Rating */}
@@ -77,6 +117,57 @@ const Reviews = () => {
                 </div>
                 <p className="text-gray-400">Total Reviews</p>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Leaderboard */}
+        <Card className="bg-slate-800/50 border-blue-500/20 mb-8">
+          <CardHeader>
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              <Trophy className="h-6 w-6 text-yellow-400" />
+              Prop Firms Leaderboard
+            </h3>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {rankedFirms.slice(0, 5).map((rankedFirm, index) => (
+                <div 
+                  key={rankedFirm.id} 
+                  className={`flex items-center justify-between p-3 rounded-lg ${
+                    rankedFirm.id === firm.id 
+                      ? 'bg-blue-500/20 border border-blue-500/30' 
+                      : 'bg-slate-700/30'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                      index === 0 ? 'bg-yellow-500 text-black' :
+                      index === 1 ? 'bg-gray-400 text-black' :
+                      index === 2 ? 'bg-amber-600 text-black' :
+                      'bg-slate-600 text-white'
+                    }`}>
+                      {index + 1}
+                    </div>
+                    <div>
+                      <h4 className="text-white font-semibold">{rankedFirm.name}</h4>
+                      <div className="flex items-center gap-2">
+                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                        <span className="text-yellow-400">{rankedFirm.reviewScore}</span>
+                        <span className="text-gray-400">• Trust: {rankedFirm.trustRating}/10</span>
+                      </div>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.location.href = `/reviews/${rankedFirm.id}`}
+                    className="border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-slate-900"
+                  >
+                    View Review
+                  </Button>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
@@ -164,10 +255,10 @@ const Reviews = () => {
         <div className="text-center">
           <Button 
             size="lg"
-            className="bg-blue-600 hover:bg-blue-700 mr-4"
-            onClick={() => window.open(firm.affiliateUrl, '_blank')}
+            className="bg-green-600 hover:bg-green-700 mr-4"
+            onClick={() => window.location.href = `/propfirm/${firm.id}`}
           >
-            Start Trading with {firm.name}
+            Buy Now - {firm.name}
           </Button>
           <Button 
             size="lg"

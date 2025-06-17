@@ -22,15 +22,11 @@ const PropFirmCard = ({ firm, index }: PropFirmCardProps) => {
 
   const discountPercentage = Math.round(((firm.originalPrice - firm.price) / firm.originalPrice) * 100);
 
-  const handleGetStarted = () => {
-    window.open(firm.affiliateUrl, '_blank');
-  };
-
-  const handleLearnMore = () => {
+  const handleBuyNow = () => {
     window.location.href = `/propfirm/${firm.id}`;
   };
 
-  const handleViewReviews = () => {
+  const handleViewReview = () => {
     window.location.href = `/reviews/${firm.id}`;
   };
 
@@ -107,26 +103,19 @@ const PropFirmCard = ({ firm, index }: PropFirmCardProps) => {
       <CardFooter className="gap-2 flex-col">
         <div className="flex gap-2 w-full">
           <Button 
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white transition-all hover:scale-105"
-            onClick={handleGetStarted}
+            className="flex-1 bg-green-600 hover:bg-green-700 text-white transition-all hover:scale-105"
+            onClick={handleBuyNow}
           >
-            Get Started
+            Buy Now
           </Button>
           <Button 
             variant="outline"
             className="flex-1 border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-slate-900 transition-all"
-            onClick={handleLearnMore}
+            onClick={handleViewReview}
           >
-            Learn More
+            View Review
           </Button>
         </div>
-        <Button 
-          variant="outline"
-          className="w-full border-green-400 text-green-400 hover:bg-green-400 hover:text-slate-900 transition-all"
-          onClick={handleViewReviews}
-        >
-          View Reviews
-        </Button>
       </CardFooter>
     </Card>
   );

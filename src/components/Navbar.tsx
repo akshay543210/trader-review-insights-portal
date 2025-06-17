@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, User } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface NavbarProps {
@@ -15,6 +15,10 @@ const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
 
   // Get prop firms from location state or empty array
   const propFirms = location.state?.propFirms || [];
+
+  // For now, we'll hide admin functionality completely from regular users
+  // In a real app, you'd check authentication here
+  const showAdminControls = false; // Set to true only for authenticated admins
 
   return (
     <nav className="bg-slate-900/95 backdrop-blur-sm border-b border-blue-500/20 sticky top-0 z-50">
@@ -52,14 +56,15 @@ const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
           </div>
 
           <div className="hidden md:flex md:items-center md:space-x-4">
-            <Button
-              variant="ghost"
-              onClick={() => setIsAdminMode(!isAdminMode)}
-              className="text-gray-300 hover:text-blue-400"
-            >
-              <User className="h-4 w-4 mr-2" />
-              {isAdminMode ? 'User View' : 'Admin'}
-            </Button>
+            {showAdminControls && (
+              <Button
+                variant="ghost"
+                onClick={() => setIsAdminMode(!isAdminMode)}
+                className="text-gray-300 hover:text-blue-400"
+              >
+                {isAdminMode ? 'User View' : 'Admin'}
+              </Button>
+            )}
             <Button className="bg-blue-600 hover:bg-blue-700 text-white">
               Write Review
             </Button>
@@ -100,16 +105,17 @@ const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
             >
               Compare
             </Link>
-            <div className="border-t border-gray-700 pt-2">
-              <Button
-                variant="ghost"
-                onClick={() => setIsAdminMode(!isAdminMode)}
-                className="w-full text-left text-gray-300 hover:text-blue-400 justify-start"
-              >
-                <User className="h-4 w-4 mr-2" />
-                {isAdminMode ? 'User View' : 'Admin'}
-              </Button>
-            </div>
+            {showAdminControls && (
+              <div className="border-t border-gray-700 pt-2">
+                <Button
+                  variant="ghost"
+                  onClick={() => setIsAdminMode(!isAdminMode)}
+                  className="w-full text-left text-gray-300 hover:text-blue-400 justify-start"
+                >
+                  {isAdminMode ? 'User View' : 'Admin'}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}
