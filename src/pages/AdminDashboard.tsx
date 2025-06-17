@@ -5,9 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { LogOut, Shield } from "lucide-react";
 import AdminPanel from "../components/AdminPanel";
+import { propFirmsData } from "../data/propFirms";
+import { PropFirm } from "../types";
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [propFirms, setPropFirms] = useState<PropFirm[]>(propFirmsData);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,6 +26,22 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem("isAdmin");
     navigate("/");
+  };
+
+  const handleAddFirm = (firmData: Omit<PropFirm, 'id'>) => {
+    const newId = Math.max(...propFirms.map(f => f.id)) + 1;
+    const newFirm = { ...firmData, id: newId };
+    setPropFirms([...propFirms, newFirm]);
+  };
+
+  const handleUpdateFirm = (id: number, updates: Partial<PropFirm>) => {
+    setPropFirms(propFirms.map(firm => 
+      firm.id === id ? { ...firm, ...updates } : firm
+    ));
+  };
+
+  const handleDeleteFirm = (id: number) => {
+    setPropFirms(propFirms.filter(firm => firm.id !== id));
   };
 
   if (!isAuthenticated) {
@@ -60,7 +79,12 @@ const AdminDashboard = () => {
           </CardHeader>
         </Card>
 
-        <AdminPanel />
+        <AdminPanel 
+          propFirms={propFirms}
+          onAdd={handleAddFirm}
+          onUpdate={handleUpdateFirm}
+          onDelete={handleDeleteFirm}
+        />
       </div>
     </div>
   );
