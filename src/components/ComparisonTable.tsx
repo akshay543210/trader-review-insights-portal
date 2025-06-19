@@ -42,8 +42,8 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
-                      <Badge className={categoryColors[firm.category]}>
-                        {firm.category}
+                      <Badge className={categoryColors[firm.brand as keyof typeof categoryColors] || 'bg-gray-500/20 text-gray-400 border-gray-500/30'}>
+                        {firm.brand || 'N/A'}
                       </Badge>
                     </th>
                   ))}
@@ -55,7 +55,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
                   {selectedFirms.map((firm) => (
                     <td key={firm.id} className="py-4 px-2 text-center">
                       <div className="text-blue-400 font-bold">${firm.price}</div>
-                      <div className="text-sm text-gray-400 line-through">${firm.originalPrice}</div>
+                      <div className="text-sm text-gray-400 line-through">${firm.original_price}</div>
                     </td>
                   ))}
                 </tr>
@@ -66,7 +66,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
                     <td key={firm.id} className="py-4 px-2 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <Star className="h-4 w-4 text-yellow-400" />
-                        <span className="text-white font-semibold">{firm.reviewScore}</span>
+                        <span className="text-white font-semibold">{firm.review_score || 0}</span>
                       </div>
                     </td>
                   ))}
@@ -78,7 +78,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
                     <td key={firm.id} className="py-4 px-2 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <Shield className="h-4 w-4 text-green-400" />
-                        <span className="text-white font-semibold">{firm.trustRating}/10</span>
+                        <span className="text-white font-semibold">{firm.trust_rating || 0}/10</span>
                       </div>
                     </td>
                   ))}
@@ -90,7 +90,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
                     <td key={firm.id} className="py-4 px-2 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <DollarSign className="h-4 w-4 text-blue-400" />
-                        <span className="text-white font-semibold">{firm.profitSplit}%</span>
+                        <span className="text-white font-semibold">{firm.profit_split}%</span>
                       </div>
                     </td>
                   ))}
@@ -102,7 +102,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
                     <td key={firm.id} className="py-4 px-2 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <TrendingUp className="h-4 w-4 text-purple-400" />
-                        <span className="text-white font-semibold">{firm.payoutRate}%</span>
+                        <span className="text-white font-semibold">{firm.payout_rate}%</span>
                       </div>
                     </td>
                   ))}
@@ -112,7 +112,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
                   <td className="py-4 px-2 text-gray-300 font-medium">Funding Amount</td>
                   {selectedFirms.map((firm) => (
                     <td key={firm.id} className="py-4 px-2 text-center">
-                      <span className="text-white font-semibold">{firm.fundingAmount}</span>
+                      <span className="text-white font-semibold">{firm.funding_amount}</span>
                     </td>
                   ))}
                 </tr>
@@ -122,7 +122,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
                   {selectedFirms.map((firm) => (
                     <td key={firm.id} className="py-4 px-2 text-center">
                       <div className="bg-blue-500/10 border border-blue-500/20 rounded px-2 py-1">
-                        <span className="text-blue-400 font-semibold text-sm">{firm.couponCode}</span>
+                        <span className="text-blue-400 font-semibold text-sm">{firm.coupon_code || 'N/A'}</span>
                       </div>
                     </td>
                   ))}
@@ -136,7 +136,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
                         <Button 
                           size="sm"
                           className="w-full bg-blue-600 hover:bg-blue-700"
-                          onClick={() => window.open(firm.affiliateUrl, '_blank')}
+                          onClick={() => firm.affiliate_url && window.open(firm.affiliate_url, '_blank')}
                         >
                           Get Started
                         </Button>

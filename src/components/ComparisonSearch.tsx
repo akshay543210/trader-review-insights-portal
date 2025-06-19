@@ -22,7 +22,7 @@ const ComparisonSearch = ({ propFirms, selectedFirms, onAddFirm }: ComparisonSea
   );
 
   const handleFirmSelect = (firmId: string, slotNumber: number) => {
-    const firm = propFirms.find(f => f.id === parseInt(firmId));
+    const firm = propFirms.find(f => f.id === firmId);
     if (firm) {
       onAddFirm(firm);
       // Reset the select value after adding
@@ -47,7 +47,7 @@ const ComparisonSearch = ({ propFirms, selectedFirms, onAddFirm }: ComparisonSea
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-white font-medium">{selectedFirm.name}</h4>
-                  <p className="text-sm text-gray-400">{selectedFirm.category} • ${selectedFirm.price}</p>
+                  <p className="text-sm text-gray-400">{selectedFirm.brand || 'N/A'} • ${selectedFirm.price}</p>
                 </div>
                 <Button
                   size="sm"
@@ -77,7 +77,7 @@ const ComparisonSearch = ({ propFirms, selectedFirms, onAddFirm }: ComparisonSea
                 {availableFirms.map((firm) => (
                   <SelectItem 
                     key={firm.id} 
-                    value={firm.id.toString()}
+                    value={firm.id}
                     className="text-white hover:bg-slate-700"
                   >
                     {firm.name}
