@@ -7,6 +7,7 @@ import FilteredFirmsList from "../components/FilteredFirmsList";
 import Footer from "../components/Footer";
 import AdminPanel from "../components/AdminPanel";
 import { usePropFirms } from "../hooks/useSupabaseData";
+import { PropFirm } from "../types/supabase";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
@@ -15,12 +16,12 @@ const Index = () => {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [filterType, setFilterType] = useState<'cheapest' | 'top-rated' | null>(null);
 
-  const handleAddFirm = async (firmData: any) => {
+  const handleAddFirm = async (firmData: Partial<PropFirm>) => {
     // This will be handled by admin panel with Supabase
     console.log('Add firm:', firmData);
   };
 
-  const handleUpdateFirm = async (id: string, updates: any) => {
+  const handleUpdateFirm = async (id: string, updates: Partial<PropFirm>) => {
     // This will be handled by admin panel with Supabase
     console.log('Update firm:', id, updates);
   };
