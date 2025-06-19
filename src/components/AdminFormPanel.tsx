@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,12 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PropFirm } from "../types";
+import { PropFirm } from "../types/supabase";
 import { useToast } from "@/hooks/use-toast";
 
 interface AdminFormPanelProps {
-  onAdd: (firm: Omit<PropFirm, 'id'>) => void;
-  onUpdate: (id: number, firm: Partial<PropFirm>) => void;
+  onAdd: (firm: Partial<PropFirm>) => void;
+  onUpdate: (id: string, firm: Partial<PropFirm>) => void;
   editingFirm: PropFirm | null;
   setEditingFirm: (firm: PropFirm | null) => void;
 }
@@ -20,45 +19,47 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm }: AdminF
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
-    category: 'beginner' as 'beginner' | 'intermediate' | 'pro',
+    category_id: '',
     price: 0,
-    originalPrice: 0,
-    couponCode: '',
-    reviewScore: 0,
-    trustRating: 0,
+    original_price: 0,
+    coupon_code: '',
+    review_score: 0,
+    trust_rating: 0,
     description: '',
     features: '',
-    image: '/placeholder.svg',
-    profitSplit: 0,
-    payoutRate: 0,
-    fundingAmount: '',
-    userReviewCount: 0,
+    logo_url: '/placeholder.svg',
+    profit_split: 0,
+    payout_rate: 0,
+    funding_amount: '',
+    user_review_count: 0,
     pros: '',
     cons: '',
-    affiliateUrl: '',
-    brand: ''
+    affiliate_url: '',
+    brand: '',
+    slug: ''
   });
 
   const resetForm = () => {
     setFormData({
       name: '',
-      category: 'beginner',
+      category_id: '',
       price: 0,
-      originalPrice: 0,
-      couponCode: '',
-      reviewScore: 0,
-      trustRating: 0,
+      original_price: 0,
+      coupon_code: '',
+      review_score: 0,
+      trust_rating: 0,
       description: '',
       features: '',
-      image: '/placeholder.svg',
-      profitSplit: 0,
-      payoutRate: 0,
-      fundingAmount: '',
-      userReviewCount: 0,
+      logo_url: '/placeholder.svg',
+      profit_split: 0,
+      payout_rate: 0,
+      funding_amount: '',
+      user_review_count: 0,
       pros: '',
       cons: '',
-      affiliateUrl: '',
-      brand: ''
+      affiliate_url: '',
+      brand: '',
+      slug: ''
     });
     setEditingFirm(null);
   };
@@ -70,7 +71,8 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm }: AdminF
       ...formData,
       features: formData.features.split(',').map(f => f.trim()),
       pros: formData.pros.split(',').map(f => f.trim()),
-      cons: formData.cons.split(',').map(f => f.trim())
+      cons: formData.cons.split(',').map(f => f.trim()),
+      slug: formData.name.toLowerCase().replace(/\s+/g, '-')
     };
 
     if (editingFirm) {
@@ -93,23 +95,24 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm }: AdminF
   const handleEdit = (firm: PropFirm) => {
     setFormData({
       name: firm.name,
-      category: firm.category,
+      category_id: firm.category_id || '',
       price: firm.price,
-      originalPrice: firm.originalPrice,
-      couponCode: firm.couponCode,
-      reviewScore: firm.reviewScore,
-      trustRating: firm.trustRating,
-      description: firm.description,
-      features: firm.features.join(', '),
-      image: firm.image,
-      profitSplit: firm.profitSplit,
-      payoutRate: firm.payoutRate,
-      fundingAmount: firm.fundingAmount,
-      userReviewCount: firm.userReviewCount,
-      pros: firm.pros.join(', '),
-      cons: firm.cons.join(', '),
-      affiliateUrl: firm.affiliateUrl,
-      brand: firm.brand
+      original_price: firm.original_price,
+      coupon_code: firm.coupon_code || '',
+      review_score: firm.review_score || 0,
+      trust_rating: firm.trust_rating || 0,
+      description: firm.description || '',
+      features: firm.features?.join(', ') || '',
+      logo_url: firm.logo_url || '/placeholder.svg',
+      profit_split: firm.profit_split,
+      payout_rate: firm.payout_rate,
+      funding_amount: firm.funding_amount,
+      user_review_count: firm.user_review_count || 0,
+      pros: firm.pros?.join(', ') || '',
+      cons: firm.cons?.join(', ') || '',
+      affiliate_url: firm.affiliate_url || '',
+      brand: firm.brand || '',
+      slug: firm.slug
     });
     setEditingFirm(firm);
   };
@@ -153,8 +156,8 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm }: AdminF
           </div>
 
           <div>
-            <Label htmlFor="category" className="text-gray-300">Category</Label>
-            <Select value={formData.category} onValueChange={(value: 'beginner' | 'intermediate' | 'pro') => setFormData({...formData, category: value})}>
+            <Label htmlFor="category_id" className="text-gray-300">Category</Label>
+            <Select value={formData.category_id} onValueChange={(value) => setFormData({...formData, category_id: value})}>
               <SelectTrigger className="bg-slate-700 border-blue-500/20 text-white">
                 <SelectValue />
               </SelectTrigger>
@@ -179,12 +182,12 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm }: AdminF
               />
             </div>
             <div>
-              <Label htmlFor="originalPrice" className="text-gray-300">Original Price ($)</Label>
+              <Label htmlFor="original_price" className="text-gray-300">Original Price ($)</Label>
               <Input
-                id="originalPrice"
+                id="original_price"
                 type="number"
-                value={formData.originalPrice}
-                onChange={(e) => setFormData({...formData, originalPrice: Number(e.target.value)})}
+                value={formData.original_price}
+                onChange={(e) => setFormData({...formData, original_price: Number(e.target.value)})}
                 className="bg-slate-700 border-blue-500/20 text-white"
                 required
               />
@@ -192,11 +195,11 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm }: AdminF
           </div>
 
           <div>
-            <Label htmlFor="couponCode" className="text-gray-300">Coupon Code</Label>
+            <Label htmlFor="coupon_code" className="text-gray-300">Coupon Code</Label>
             <Input
-              id="couponCode"
-              value={formData.couponCode}
-              onChange={(e) => setFormData({...formData, couponCode: e.target.value})}
+              id="coupon_code"
+              value={formData.coupon_code}
+              onChange={(e) => setFormData({...formData, coupon_code: e.target.value})}
               className="bg-slate-700 border-blue-500/20 text-white"
               required
             />
@@ -204,27 +207,27 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm }: AdminF
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="profitSplit" className="text-gray-300">Profit Split (%)</Label>
+              <Label htmlFor="profit_split" className="text-gray-300">Profit Split (%)</Label>
               <Input
-                id="profitSplit"
+                id="profit_split"
                 type="number"
                 min="0"
                 max="100"
-                value={formData.profitSplit}
-                onChange={(e) => setFormData({...formData, profitSplit: Number(e.target.value)})}
+                value={formData.profit_split}
+                onChange={(e) => setFormData({...formData, profit_split: Number(e.target.value)})}
                 className="bg-slate-700 border-blue-500/20 text-white"
                 required
               />
             </div>
             <div>
-              <Label htmlFor="payoutRate" className="text-gray-300">Payout Rate (%)</Label>
+              <Label htmlFor="payout_rate" className="text-gray-300">Payout Rate (%)</Label>
               <Input
-                id="payoutRate"
+                id="payout_rate"
                 type="number"
                 min="0"
                 max="100"
-                value={formData.payoutRate}
-                onChange={(e) => setFormData({...formData, payoutRate: Number(e.target.value)})}
+                value={formData.payout_rate}
+                onChange={(e) => setFormData({...formData, payout_rate: Number(e.target.value)})}
                 className="bg-slate-700 border-blue-500/20 text-white"
                 required
               />
@@ -232,11 +235,11 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm }: AdminF
           </div>
 
           <div>
-            <Label htmlFor="fundingAmount" className="text-gray-300">Funding Amount</Label>
+            <Label htmlFor="funding_amount" className="text-gray-300">Funding Amount</Label>
             <Input
-              id="fundingAmount"
-              value={formData.fundingAmount}
-              onChange={(e) => setFormData({...formData, fundingAmount: e.target.value})}
+              id="funding_amount"
+              value={formData.funding_amount}
+              onChange={(e) => setFormData({...formData, funding_amount: e.target.value})}
               className="bg-slate-700 border-blue-500/20 text-white"
               placeholder="e.g., $100,000"
               required
@@ -245,41 +248,41 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm }: AdminF
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="reviewScore" className="text-gray-300">Review Score (1-5)</Label>
+              <Label htmlFor="review_score" className="text-gray-300">Review Score (1-5)</Label>
               <Input
-                id="reviewScore"
+                id="review_score"
                 type="number"
                 min="1"
                 max="5"
                 step="0.1"
-                value={formData.reviewScore}
-                onChange={(e) => setFormData({...formData, reviewScore: Number(e.target.value)})}
+                value={formData.review_score}
+                onChange={(e) => setFormData({...formData, review_score: Number(e.target.value)})}
                 className="bg-slate-700 border-blue-500/20 text-white"
                 required
               />
             </div>
             <div>
-              <Label htmlFor="trustRating" className="text-gray-300">Trust Rating (1-10)</Label>
+              <Label htmlFor="trust_rating" className="text-gray-300">Trust Rating (1-10)</Label>
               <Input
-                id="trustRating"
+                id="trust_rating"
                 type="number"
                 min="1"
                 max="10"
                 step="0.1"
-                value={formData.trustRating}
-                onChange={(e) => setFormData({...formData, trustRating: Number(e.target.value)})}
+                value={formData.trust_rating}
+                onChange={(e) => setFormData({...formData, trust_rating: Number(e.target.value)})}
                 className="bg-slate-700 border-blue-500/20 text-white"
                 required
               />
             </div>
             <div>
-              <Label htmlFor="userReviewCount" className="text-gray-300">User Reviews</Label>
+              <Label htmlFor="user_review_count" className="text-gray-300">User Reviews</Label>
               <Input
-                id="userReviewCount"
+                id="user_review_count"
                 type="number"
                 min="0"
-                value={formData.userReviewCount}
-                onChange={(e) => setFormData({...formData, userReviewCount: Number(e.target.value)})}
+                value={formData.user_review_count}
+                onChange={(e) => setFormData({...formData, user_review_count: Number(e.target.value)})}
                 className="bg-slate-700 border-blue-500/20 text-white"
                 required
               />
@@ -287,12 +290,12 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm }: AdminF
           </div>
 
           <div>
-            <Label htmlFor="affiliateUrl" className="text-gray-300">Affiliate URL</Label>
+            <Label htmlFor="affiliate_url" className="text-gray-300">Affiliate URL</Label>
             <Input
-              id="affiliateUrl"
+              id="affiliate_url"
               type="url"
-              value={formData.affiliateUrl}
-              onChange={(e) => setFormData({...formData, affiliateUrl: e.target.value})}
+              value={formData.affiliate_url}
+              onChange={(e) => setFormData({...formData, affiliate_url: e.target.value})}
               className="bg-slate-700 border-blue-500/20 text-white"
               placeholder="https://..."
               required

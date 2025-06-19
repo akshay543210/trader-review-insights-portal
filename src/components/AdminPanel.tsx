@@ -2,13 +2,13 @@
 import { useState } from "react";
 import AdminFormPanel from "./AdminFormPanel";
 import AdminFirmsList from "./AdminFirmsList";
-import { PropFirm } from "../types";
+import { PropFirm } from "../types/supabase";
 
 interface AdminPanelProps {
   propFirms: PropFirm[];
-  onAdd: (firm: Omit<PropFirm, 'id'>) => void;
-  onUpdate: (id: number, firm: Partial<PropFirm>) => void;
-  onDelete: (id: number) => void;
+  onAdd: (firm: Partial<PropFirm>) => void;
+  onUpdate: (id: string, firm: Partial<PropFirm>) => void;
+  onDelete: (id: string) => void;
 }
 
 const AdminPanel = ({ propFirms, onAdd, onUpdate, onDelete }: AdminPanelProps) => {

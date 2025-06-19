@@ -1,19 +1,19 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PropFirm } from "../types";
+import { PropFirm } from "../types/supabase";
 import { useToast } from "@/hooks/use-toast";
 
 interface AdminFirmsListProps {
   propFirms: PropFirm[];
   onEdit: (firm: PropFirm) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 }
 
 const AdminFirmsList = ({ propFirms, onEdit, onDelete }: AdminFirmsListProps) => {
   const { toast } = useToast();
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     if (window.confirm('Are you sure you want to delete this prop firm?')) {
       onDelete(id);
       toast({
@@ -35,13 +35,13 @@ const AdminFirmsList = ({ propFirms, onEdit, onDelete }: AdminFirmsListProps) =>
               <div className="flex justify-between items-start mb-2">
                 <h4 className="text-white font-semibold">{firm.name}</h4>
                 <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded capitalize">
-                  {firm.category}
+                  {firm.brand}
                 </span>
               </div>
               <p className="text-gray-400 text-sm mb-3">{firm.description}</p>
               <div className="flex justify-between items-center">
                 <div className="text-sm text-gray-300">
-                  ${firm.price} • ⭐ {firm.reviewScore} • Trust: {firm.trustRating}/10
+                  ${firm.price} • ⭐ {firm.review_score} • Trust: {firm.trust_rating}/10
                 </div>
                 <div className="flex gap-2">
                   <Button

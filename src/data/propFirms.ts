@@ -1,5 +1,5 @@
 
-import { PropFirm } from "../types";
+import { PropFirm } from "../types/supabase";
 
 export const propFirmsData: PropFirm[] = [
   {

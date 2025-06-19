@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { LogOut, Shield } from "lucide-react";
 import AdminPanel from "../components/AdminPanel";
-import { propFirmsData } from "../data/propFirms";
-import { PropFirm } from "../types";
+import { usePropFirms } from "../hooks/useSupabaseData";
+import { PropFirm } from "../types/supabase";
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [propFirms, setPropFirms] = useState<PropFirm[]>(propFirmsData);
+  const { propFirms } = usePropFirms();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,20 +28,19 @@ const AdminDashboard = () => {
     navigate("/");
   };
 
-  const handleAddFirm = (firmData: Omit<PropFirm, 'id'>) => {
-    const newId = Math.max(...propFirms.map(f => f.id)) + 1;
-    const newFirm = { ...firmData, id: newId };
-    setPropFirms([...propFirms, newFirm]);
+  const handleAddFirm = async (firmData: Partial<PropFirm>) => {
+    // This will be handled by admin panel with Supabase
+    console.log('Add firm:', firmData);
   };
 
-  const handleUpdateFirm = (id: number, updates: Partial<PropFirm>) => {
-    setPropFirms(propFirms.map(firm => 
-      firm.id === id ? { ...firm, ...updates } : firm
-    ));
+  const handleUpdateFirm = async (id: string, updates: Partial<PropFirm>) => {
+    // This will be handled by admin panel with Supabase
+    console.log('Update firm:', id, updates);
   };
 
-  const handleDeleteFirm = (id: number) => {
-    setPropFirms(propFirms.filter(firm => firm.id !== id));
+  const handleDeleteFirm = async (id: string) => {
+    // This will be handled by admin panel with Supabase
+    console.log('Delete firm:', id);
   };
 
   if (!isAuthenticated) {
