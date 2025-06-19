@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 const Comparison = () => {
   const { propFirms, loading } = usePropFirms();
   const [selectedFirms, setSelectedFirms] = useState<(PropFirm | null)[]>([null, null, null]);
+  const [isAdminMode, setIsAdminMode] = useState(false);
 
   const handleFirmSelect = (firmId: string, index: number) => {
     const firm = propFirms.find(f => f.id === firmId) || null;
@@ -168,7 +169,7 @@ const Comparison = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar />
+        <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
         <div className="container mx-auto px-4 py-12">
           <div className="text-center">Loading comparison tool...</div>
         </div>
@@ -179,7 +180,7 @@ const Comparison = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
       
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">

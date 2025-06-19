@@ -41,7 +41,11 @@ export interface Review {
   helpful_count: number;
   created_at: string;
   updated_at: string;
-  prop_firms?: PropFirm;
+  prop_firms?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
 }
 
 export interface Category {

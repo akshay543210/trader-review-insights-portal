@@ -43,7 +43,7 @@ export const useReviews = (firmId?: string) => {
           .from('reviews')
           .select(`
             *,
-            prop_firms (
+            prop_firms:firm_id (
               id,
               name,
               slug

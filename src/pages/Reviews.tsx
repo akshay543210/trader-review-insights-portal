@@ -12,6 +12,7 @@ import Footer from "@/components/Footer";
 const Reviews = () => {
   const { reviews, loading, error } = useReviews();
   const [displayCount, setDisplayCount] = useState(10);
+  const [isAdminMode, setIsAdminMode] = useState(false);
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -27,7 +28,7 @@ const Reviews = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-        <Navbar />
+        <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
         <div className="container mx-auto px-4 py-12">
           <div className="text-center text-white">Loading reviews...</div>
         </div>
@@ -39,7 +40,7 @@ const Reviews = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-        <Navbar />
+        <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
         <div className="container mx-auto px-4 py-12">
           <div className="text-center text-red-400">Error loading reviews: {error}</div>
         </div>
@@ -50,7 +51,7 @@ const Reviews = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-      <Navbar />
+      <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
       
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +16,7 @@ const PropFirmDetail = () => {
   const [firm, setFirm] = useState<PropFirm | null>(null);
   const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [isAdminMode, setIsAdminMode] = useState(false);
   const { reviews, loading: reviewsLoading } = useReviews(firm?.id);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const PropFirmDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-        <Navbar />
+        <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
         <div className="container mx-auto px-4 py-12">
           <div className="text-center text-white">Loading firm details...</div>
         </div>
@@ -68,7 +68,7 @@ const PropFirmDetail = () => {
   if (!firm) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-        <Navbar />
+        <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
         <div className="container mx-auto px-4 py-12">
           <div className="text-center text-red-400">Firm not found</div>
         </div>
@@ -81,7 +81,7 @@ const PropFirmDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-      <Navbar />
+      <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
       
       <div className="container mx-auto px-4 py-12">
         {/* Back Button */}

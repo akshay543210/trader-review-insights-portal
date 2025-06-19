@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import PropFirmCard from "../components/PropFirmCard";
 import FilterSidebar from "../components/FilterSidebar";
-import { PropFirm } from "../types";
+import { PropFirm } from "../types/supabase";
 
 const AllPropFirms = () => {
   const location = useLocation();
@@ -20,7 +20,7 @@ const AllPropFirms = () => {
 
     // Apply category filter
     if (filters.category !== 'all') {
-      filtered = filtered.filter(firm => firm.category === filters.category);
+      filtered = filtered.filter(firm => firm.category_id === filters.category);
     }
 
     // Apply price range filter
@@ -29,16 +29,16 @@ const AllPropFirms = () => {
     );
 
     // Apply rating filter
-    filtered = filtered.filter(firm => firm.reviewScore >= filters.minRating);
+    filtered = filtered.filter(firm => firm.review_score >= filters.minRating);
 
     // Apply trust filter
-    filtered = filtered.filter(firm => firm.trustRating >= filters.minTrust);
+    filtered = filtered.filter(firm => firm.trust_rating >= filters.minTrust);
 
     // Apply search filter
     if (filters.searchTerm) {
       filtered = filtered.filter(firm => 
         firm.name.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-        firm.brand.toLowerCase().includes(filters.searchTerm.toLowerCase())
+        (firm.brand && firm.brand.toLowerCase().includes(filters.searchTerm.toLowerCase()))
       );
     }
 
@@ -50,11 +50,11 @@ const AllPropFirms = () => {
       case 'price':
         return a.price - b.price;
       case 'review':
-        return b.reviewScore - a.reviewScore;
+        return b.review_score - a.review_score;
       case 'trust':
-        return b.trustRating - a.trustRating;
+        return b.trust_rating - a.trust_rating;
       case 'payout':
-        return b.payoutRate - a.payoutRate;
+        return b.payout_rate - a.payout_rate;
       default:
         return 0;
     }
