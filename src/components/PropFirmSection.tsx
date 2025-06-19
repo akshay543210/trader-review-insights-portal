@@ -3,33 +3,45 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import PropFirmCard from "./PropFirmCard";
-import { PropFirm } from "../types";
+import { PropFirm } from "@/types/supabase";
 
 interface PropFirmSectionProps {
   propFirms: PropFirm[];
   sortBy: 'price' | 'review' | 'trust';
   setSortBy: (sort: 'price' | 'review' | 'trust') => void;
+  loading?: boolean;
 }
 
-const PropFirmSection = ({ propFirms, sortBy, setSortBy }: PropFirmSectionProps) => {
+const PropFirmSection = ({ propFirms, sortBy, setSortBy, loading }: PropFirmSectionProps) => {
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'beginner' | 'intermediate' | 'pro'>('all');
 
+  // For now, we'll filter by category name matching - later we can join with categories table
   const filteredFirms = selectedCategory === 'all' 
     ? propFirms 
-    : propFirms.filter(firm => firm.category === selectedCategory);
+    : propFirms; // TODO: Add category filtering once we have category joins
 
   const sortedFirms = [...filteredFirms].sort((a, b) => {
     switch (sortBy) {
       case 'price':
         return a.price - b.price;
       case 'review':
-        return b.reviewScore - a.reviewScore;
+        return b.review_score - a.review_score;
       case 'trust':
-        return b.trustRating - a.trustRating;
+        return b.trust_rating - a.trust_rating;
       default:
         return 0;
     }
   });
+
+  if (loading) {
+    return (
+      <section id="firms" className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="text-white text-lg">Loading prop firms...</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="firms" className="py-20 px-4 sm:px-6 lg:px-8">

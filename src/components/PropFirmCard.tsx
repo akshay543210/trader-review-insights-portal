@@ -1,33 +1,28 @@
 
-import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PropFirm } from "../types";
+import { PropFirm } from "@/types/supabase";
 
 interface PropFirmCardProps {
   firm: PropFirm;
-  index: number;
+  index?: number;
 }
 
-const PropFirmCard = ({ firm, index }: PropFirmCardProps) => {
-  const location = useLocation();
-  const propFirms = location.state?.propFirms || [];
+const PropFirmCard = ({ firm, index = 0 }: PropFirmCardProps) => {
+  const navigate = useNavigate();
 
-  const categoryColors = {
-    beginner: 'bg-green-500/20 text-green-400 border-green-500/30',
-    intermediate: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-    pro: 'bg-purple-500/20 text-purple-400 border-purple-500/30'
-  };
-
-  const discountPercentage = Math.round(((firm.originalPrice - firm.price) / firm.originalPrice) * 100);
+  const discountPercentage = Math.round(((firm.original_price - firm.price) / firm.original_price) * 100);
 
   const handleBuyNow = () => {
-    window.location.href = `/propfirm/${firm.id}`;
+    if (firm.affiliate_url) {
+      window.open(firm.affiliate_url, '_blank');
+    }
   };
 
   const handleViewReview = () => {
-    window.location.href = `/reviews/${firm.id}`;
+    navigate(`/firms/${firm.slug}`);
   };
 
   return (
@@ -38,24 +33,28 @@ const PropFirmCard = ({ firm, index }: PropFirmCardProps) => {
       <CardHeader>
         <div className="flex justify-between items-start mb-4">
           <h3 className="text-xl font-bold text-white">{firm.name}</h3>
-          <Badge className={categoryColors[firm.category]}>
-            {firm.category}
-          </Badge>
+          {firm.brand && (
+            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
+              {firm.brand}
+            </Badge>
+          )}
         </div>
         
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <span className="text-2xl font-bold text-blue-400">${firm.price}</span>
-            <span className="text-lg text-gray-400 line-through">${firm.originalPrice}</span>
+            <span className="text-lg text-gray-400 line-through">${firm.original_price}</span>
             <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
               -{discountPercentage}%
             </Badge>
           </div>
           
-          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
-            <div className="text-sm text-blue-400 font-medium">Coupon Code</div>
-            <div className="text-lg font-bold text-white">{firm.couponCode}</div>
-          </div>
+          {firm.coupon_code && (
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
+              <div className="text-sm text-blue-400 font-medium">Coupon Code</div>
+              <div className="text-lg font-bold text-white">{firm.coupon_code}</div>
+            </div>
+          )}
         </div>
       </CardHeader>
 
@@ -67,24 +66,31 @@ const PropFirmCard = ({ firm, index }: PropFirmCardProps) => {
             <span className="text-gray-400">Review Score</span>
             <div className="flex items-center gap-1">
               <span className="text-yellow-400 text-lg">★</span>
-              <span className="text-white font-semibold">{firm.reviewScore}</span>
+              <span className="text-white font-semibold">{firm.review_score}</span>
             </div>
           </div>
           
           <div className="flex justify-between items-center">
             <span className="text-gray-400">Trust Rating</span>
-            <span className="text-green-400 font-semibold">{firm.trustRating}/10</span>
+            <span className="text-green-400 font-semibold">{firm.trust_rating}/10</span>
           </div>
 
           <div className="flex justify-between items-center">
             <span className="text-gray-400">Profit Split</span>
-            <span className="text-blue-400 font-semibold">{firm.profitSplit}%</span>
+            <span className="text-blue-400 font-semibold">{firm.profit_split}%</span>
           </div>
 
           <div className="flex justify-between items-center">
             <span className="text-gray-400">Payout Rate</span>
-            <span className="text-purple-400 font-semibold">{firm.payoutRate}%</span>
+            <span className="text-purple-400 font-semibold">{firm.payout_rate}%</span>
           </div>
+
+          {firm.platform && (
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">Platform</span>
+              <span className="text-gray-300 font-semibold">{firm.platform}</span>
+            </div>
+          )}
         </div>
         
         <div className="mt-4">
