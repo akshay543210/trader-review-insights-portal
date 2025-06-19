@@ -3,11 +3,11 @@ import { X, Star, Shield, DollarSign, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PropFirm } from "../types";
+import { PropFirm } from "../types/supabase";
 
 interface ComparisonTableProps {
   selectedFirms: PropFirm[];
-  onRemoveFirm: (firmId: number) => void;
+  onRemoveFirm: (firmId: string) => void;
 }
 
 const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) => {

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Search, Plus, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { PropFirm } from "../types";
+import { PropFirm } from "../types/supabase";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ComparisonSearchProps {
