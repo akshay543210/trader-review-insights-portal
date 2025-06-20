@@ -1,19 +1,22 @@
 
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import PropFirmCard from "../components/PropFirmCard";
 import FilterSidebar from "../components/FilterSidebar";
+import { usePropFirms } from "../hooks/useSupabaseData";
 import { PropFirm } from "../types/supabase";
 
 const AllPropFirms = () => {
-  const location = useLocation();
-  const propFirms = location.state?.propFirms || [];
-  
-  const [filteredFirms, setFilteredFirms] = useState<PropFirm[]>(propFirms);
+  const { propFirms, loading, error } = usePropFirms();
+  const [filteredFirms, setFilteredFirms] = useState<PropFirm[]>([]);
   const [sortBy, setSortBy] = useState<'price' | 'review' | 'trust' | 'payout'>('review');
   const [isAdminMode, setIsAdminMode] = useState(false);
+
+  // Update filtered firms when propFirms changes
+  useState(() => {
+    setFilteredFirms(propFirms);
+  });
 
   const handleFilterChange = (filters: any) => {
     let filtered = [...propFirms];
@@ -59,6 +62,34 @@ const AllPropFirms = () => {
         return 0;
     }
   });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+        <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <div className="text-white text-lg">Loading prop firms...</div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+        <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <div className="text-red-400 text-lg">Error: {error}</div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">

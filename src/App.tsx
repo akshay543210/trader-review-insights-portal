@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import AllPropFirms from "./pages/AllPropFirms";
 import Comparison from "./pages/Comparison";
+import CheapFirms from "./pages/CheapFirms";
+import TopFirms from "./pages/TopFirms";
 import PropFirmDetail from "./pages/PropFirmDetail";
 import Reviews from "./pages/Reviews";
 import AdminLogin from "./pages/AdminLogin";
@@ -25,6 +27,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/propfirms" element={<AllPropFirms />} />
           <Route path="/compare" element={<Comparison />} />
+          <Route path="/cheap-firms" element={<CheapFirms />} />
+          <Route path="/top-firms" element={<TopFirms />} />
           <Route path="/firms/:id" element={<PropFirmDetail />} />
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/admin-login" element={<AdminLogin />} />

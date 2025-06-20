@@ -31,6 +31,64 @@ export const usePropFirms = () => {
   return { propFirms, loading, error };
 };
 
+export const useCheapestFirms = () => {
+  const [propFirms, setPropFirms] = useState<PropFirm[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCheapestFirms = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('prop_firms')
+          .select('*')
+          .order('starting_fee', { ascending: true })
+          .limit(10);
+
+        if (error) throw error;
+        setPropFirms(data || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCheapestFirms();
+  }, []);
+
+  return { propFirms, loading, error };
+};
+
+export const useTopRatedFirms = () => {
+  const [propFirms, setPropFirms] = useState<PropFirm[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTopRatedFirms = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('prop_firms')
+          .select('*')
+          .order('review_score', { ascending: false })
+          .limit(5);
+
+        if (error) throw error;
+        setPropFirms(data || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopRatedFirms();
+  }, []);
+
+  return { propFirms, loading, error };
+};
+
 export const useReviews = (firmId?: string) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,7 +134,7 @@ export const getCheapestFirms = async (limit: number = 10): Promise<PropFirm[]> 
   const { data, error } = await supabase
     .from('prop_firms')
     .select('*')
-    .order('price', { ascending: true })
+    .order('starting_fee', { ascending: true })
     .limit(limit);
 
   if (error) throw error;

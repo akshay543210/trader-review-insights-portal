@@ -14,6 +14,14 @@ const Hero = () => {
     window.location.href = '/compare';
   };
 
+  const navigateToCheapFirms = () => {
+    window.location.href = '/cheap-firms';
+  };
+
+  const navigateToTopFirms = () => {
+    window.location.href = '/top-firms';
+  };
+
   return (
     <section id="home" className="relative py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto text-center">
@@ -31,10 +39,10 @@ const Hero = () => {
             prop firm directory.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 justify-center max-w-4xl mx-auto">
             <Button 
               size="lg"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg transition-all hover:scale-105"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 text-lg transition-all hover:scale-105"
               onClick={navigateToAllFirms}
             >
               Explore All Firms
@@ -42,10 +50,26 @@ const Hero = () => {
             <Button 
               size="lg"
               variant="outline"
-              className="border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-slate-900 px-8 py-3 text-lg transition-all hover:scale-105"
+              className="border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-slate-900 px-6 py-3 text-lg transition-all hover:scale-105"
               onClick={navigateToCompare}
             >
               Compare Firms
+            </Button>
+            <Button 
+              size="lg"
+              variant="outline"
+              className="border-green-400 text-green-400 hover:bg-green-400 hover:text-slate-900 px-6 py-3 text-lg transition-all hover:scale-105"
+              onClick={navigateToCheapFirms}
+            >
+              💰 Cheap Cost PropFirms
+            </Button>
+            <Button 
+              size="lg"
+              variant="outline"
+              className="border-orange-400 text-orange-400 hover:bg-orange-400 hover:text-slate-900 px-6 py-3 text-lg transition-all hover:scale-105"
+              onClick={navigateToTopFirms}
+            >
+              🔥 Top 5 PropFirms
             </Button>
           </div>
         </div>
