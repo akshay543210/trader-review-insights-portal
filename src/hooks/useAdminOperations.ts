@@ -11,9 +11,37 @@ export const useAdminOperations = () => {
   const addFirm = async (firmData: Partial<PropFirm>) => {
     setLoading(true);
     try {
+      // Ensure required fields are present
+      const completeData = {
+        name: firmData.name || '',
+        slug: firmData.slug || firmData.name?.toLowerCase().replace(/\s+/g, '-') || '',
+        funding_amount: firmData.funding_amount || '',
+        price: firmData.price || 0,
+        original_price: firmData.original_price || 0,
+        profit_split: firmData.profit_split || 0,
+        payout_rate: firmData.payout_rate || 0,
+        category_id: firmData.category_id,
+        coupon_code: firmData.coupon_code,
+        review_score: firmData.review_score,
+        trust_rating: firmData.trust_rating,
+        description: firmData.description,
+        features: firmData.features,
+        logo_url: firmData.logo_url,
+        user_review_count: firmData.user_review_count,
+        pros: firmData.pros,
+        cons: firmData.cons,
+        affiliate_url: firmData.affiliate_url,
+        brand: firmData.brand,
+        platform: firmData.platform,
+        max_funding: firmData.max_funding,
+        evaluation_model: firmData.evaluation_model,
+        starting_fee: firmData.starting_fee,
+        regulation: firmData.regulation,
+      };
+
       const { error } = await supabase
         .from('prop_firms')
-        .insert(firmData);
+        .insert(completeData);
 
       if (error) throw error;
 
