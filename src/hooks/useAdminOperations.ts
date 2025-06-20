@@ -13,7 +13,7 @@ export const useAdminOperations = () => {
     try {
       const { error } = await supabase
         .from('prop_firms')
-        .insert([firmData]);
+        .insert(firmData);
 
       if (error) throw error;
 
