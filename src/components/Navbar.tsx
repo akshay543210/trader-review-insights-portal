@@ -42,9 +42,12 @@ const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
               >
                 All Firms
               </Link>
-              <a href="#reviews" className="text-gray-300 hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors">
+              <Link 
+                to="/reviews" 
+                className="text-gray-300 hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors"
+              >
                 Reviews
-              </a>
+              </Link>
               <Link 
                 to="/compare" 
                 state={{ propFirms }}
@@ -95,9 +98,12 @@ const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
             >
               All Firms
             </Link>
-            <a href="#reviews" className="block px-3 py-2 text-gray-300 hover:text-blue-400 transition-colors">
+            <Link 
+              to="/reviews" 
+              className="block px-3 py-2 text-gray-300 hover:text-blue-400 transition-colors"
+            >
               Reviews
-            </a>
+            </Link>
             <Link 
               to="/compare" 
               state={{ propFirms }}

@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { PropFirm, Review } from '@/types/supabase';
 
@@ -8,27 +7,29 @@ export const usePropFirms = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchPropFirms = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('prop_firms')
-          .select('*')
-          .order('created_at', { ascending: false });
+  const fetchPropFirms = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('prop_firms')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        setPropFirms(data || []);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPropFirms();
+      if (error) throw error;
+      setPropFirms(data || []);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return { propFirms, loading, error };
+  useEffect(() => {
+    fetchPropFirms();
+  }, [fetchPropFirms]);
+
+  return { propFirms, loading, error, refetch: fetchPropFirms };
 };
 
 export const useCheapestFirms = () => {

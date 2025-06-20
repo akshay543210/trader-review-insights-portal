@@ -7,15 +7,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PropFirm } from "../types/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 interface AdminFormPanelProps {
   onAdd: (firm: Partial<PropFirm>) => void;
   onUpdate: (id: string, firm: Partial<PropFirm>) => void;
   editingFirm: PropFirm | null;
   setEditingFirm: (firm: PropFirm | null) => void;
+  loading?: boolean;
 }
 
-const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm }: AdminFormPanelProps) => {
+const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading = false }: AdminFormPanelProps) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
@@ -64,32 +66,30 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm }: AdminF
     setEditingFirm(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!formData.name || !formData.brand || !formData.funding_amount) {
+      return;
+    }
+
     const firmData = {
       ...formData,
-      features: formData.features.split(',').map(f => f.trim()),
-      pros: formData.pros.split(',').map(f => f.trim()),
-      cons: formData.cons.split(',').map(f => f.trim()),
-      slug: formData.name.toLowerCase().replace(/\s+/g, '-')
+      features: formData.features.split(',').map(f => f.trim()).filter(f => f),
+      pros: formData.pros.split(',').map(f => f.trim()).filter(f => f),
+      cons: formData.cons.split(',').map(f => f.trim()).filter(f => f),
+      slug: formData.slug || formData.name.toLowerCase().replace(/\s+/g, '-')
     };
 
     if (editingFirm) {
-      onUpdate(editingFirm.id, firmData);
-      toast({
-        title: "Success",
-        description: "Prop firm updated successfully!",
-      });
+      await onUpdate(editingFirm.id, firmData);
     } else {
-      onAdd(firmData);
-      toast({
-        title: "Success", 
-        description: "Prop firm added successfully!",
-      });
+      await onAdd(firmData);
     }
 
-    resetForm();
+    if (!loading) {
+      resetForm();
+    }
   };
 
   const handleEdit = (firm: PropFirm) => {
@@ -134,24 +134,26 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm }: AdminF
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4 max-h-96 overflow-y-auto">
           <div>
-            <Label htmlFor="name" className="text-gray-300">Firm Name</Label>
+            <Label htmlFor="name" className="text-gray-300">Firm Name *</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
               className="bg-slate-700 border-blue-500/20 text-white"
               required
+              disabled={loading}
             />
           </div>
 
           <div>
-            <Label htmlFor="brand" className="text-gray-300">Brand</Label>
+            <Label htmlFor="brand" className="text-gray-300">Brand *</Label>
             <Input
               id="brand"
               value={formData.brand}
               onChange={(e) => setFormData({...formData, brand: e.target.value})}
               className="bg-slate-700 border-blue-500/20 text-white"
               required
+              disabled={loading}
             />
           </div>
 
@@ -350,11 +352,28 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm }: AdminF
           </div>
 
           <div className="flex gap-4">
-            <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white">
-              {editingFirm ? 'Update Firm' : 'Add Firm'}
+            <Button 
+              type="submit" 
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              disabled={loading || !formData.name || !formData.brand || !formData.funding_amount}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {editingFirm ? 'Updating...' : 'Adding...'}
+                </>
+              ) : (
+                editingFirm ? 'Update Firm' : 'Add Firm'
+              )}
             </Button>
             {editingFirm && (
-              <Button type="button" variant="outline" onClick={resetForm} className="border-gray-400 text-gray-400">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={resetForm} 
+                className="border-gray-400 text-gray-400"
+                disabled={loading}
+              >
                 Cancel
               </Button>
             )}

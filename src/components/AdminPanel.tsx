@@ -3,16 +3,35 @@ import { useState } from "react";
 import AdminFormPanel from "./AdminFormPanel";
 import AdminFirmsList from "./AdminFirmsList";
 import { PropFirm } from "../types/supabase";
+import { useAdminOperations } from "../hooks/useAdminOperations";
+import { usePropFirms } from "../hooks/useSupabaseData";
 
-interface AdminPanelProps {
-  propFirms: PropFirm[];
-  onAdd: (firm: Partial<PropFirm>) => void;
-  onUpdate: (id: string, firm: Partial<PropFirm>) => void;
-  onDelete: (id: string) => void;
-}
-
-const AdminPanel = ({ propFirms, onAdd, onUpdate, onDelete }: AdminPanelProps) => {
+const AdminPanel = () => {
   const [editingFirm, setEditingFirm] = useState<PropFirm | null>(null);
+  const { propFirms, loading: dataLoading, refetch } = usePropFirms();
+  const { addFirm, updateFirm, deleteFirm, loading: operationLoading } = useAdminOperations();
+
+  const handleAdd = async (firmData: Partial<PropFirm>) => {
+    const result = await addFirm(firmData);
+    if (result.success) {
+      refetch();
+    }
+  };
+
+  const handleUpdate = async (id: string, updates: Partial<PropFirm>) => {
+    const result = await updateFirm(id, updates);
+    if (result.success) {
+      setEditingFirm(null);
+      refetch();
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    const result = await deleteFirm(id);
+    if (result.success) {
+      refetch();
+    }
+  };
 
   const handleEdit = (firm: PropFirm) => {
     setEditingFirm(firm);
@@ -28,16 +47,18 @@ const AdminPanel = ({ propFirms, onAdd, onUpdate, onDelete }: AdminPanelProps) =
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <AdminFormPanel 
-            onAdd={onAdd}
-            onUpdate={onUpdate}
+            onAdd={handleAdd}
+            onUpdate={handleUpdate}
             editingFirm={editingFirm}
             setEditingFirm={setEditingFirm}
+            loading={operationLoading}
           />
           
           <AdminFirmsList 
             propFirms={propFirms}
             onEdit={handleEdit}
-            onDelete={onDelete}
+            onDelete={handleDelete}
+            loading={dataLoading || operationLoading}
           />
         </div>
       </div>

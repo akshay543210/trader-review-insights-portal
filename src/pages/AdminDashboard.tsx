@@ -5,12 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { LogOut, Shield } from "lucide-react";
 import AdminPanel from "../components/AdminPanel";
-import { usePropFirms } from "../hooks/useSupabaseData";
-import { PropFirm } from "../types/supabase";
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const { propFirms } = usePropFirms();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,21 +23,6 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem("isAdmin");
     navigate("/");
-  };
-
-  const handleAddFirm = async (firmData: Partial<PropFirm>) => {
-    // This will be handled by admin panel with Supabase
-    console.log('Add firm:', firmData);
-  };
-
-  const handleUpdateFirm = async (id: string, updates: Partial<PropFirm>) => {
-    // This will be handled by admin panel with Supabase
-    console.log('Update firm:', id, updates);
-  };
-
-  const handleDeleteFirm = async (id: string) => {
-    // This will be handled by admin panel with Supabase
-    console.log('Delete firm:', id);
   };
 
   if (!isAuthenticated) {
@@ -78,12 +60,7 @@ const AdminDashboard = () => {
           </CardHeader>
         </Card>
 
-        <AdminPanel 
-          propFirms={propFirms}
-          onAdd={handleAddFirm}
-          onUpdate={handleUpdateFirm}
-          onDelete={handleDeleteFirm}
-        />
+        <AdminPanel />
       </div>
     </div>
   );
