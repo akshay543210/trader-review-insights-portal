@@ -10,7 +10,7 @@ const Footer = () => {
           <div className="md:col-span-2">
             <div className="flex items-center mb-4">
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                PropFirmHub
+                PropFirm Knowledge
               </span>
             </div>
             <p className="text-gray-300 mb-6 max-w-md">
