@@ -27,7 +27,7 @@ const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
               <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                PropFirmHub
+                PropFirm Knowledge
               </Link>
             </div>
             
