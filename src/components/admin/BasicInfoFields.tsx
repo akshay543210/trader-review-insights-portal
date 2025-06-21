@@ -26,6 +26,11 @@ const BasicInfoFields = ({
   const inputClassName = (fieldName: string) => 
     `bg-slate-700 border-blue-500/20 text-white ${errors[fieldName] ? 'border-red-500' : ''}`;
 
+  const handleCategoryChange = (value: string) => {
+    const categoryId = value === "none" ? null : value;
+    setFormData({...formData, category_id: categoryId});
+  };
+
   return (
     <>
       <div>
@@ -73,12 +78,16 @@ const BasicInfoFields = ({
             Loading categories...
           </div>
         ) : (
-          <Select value={formData.category_id} onValueChange={(value) => setFormData({...formData, category_id: value})} disabled={loading}>
+          <Select 
+            value={formData.category_id || "none"} 
+            onValueChange={handleCategoryChange} 
+            disabled={loading}
+          >
             <SelectTrigger className="bg-slate-700 border-blue-500/20 text-white">
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent className="bg-slate-800 border-blue-500/20">
-              <SelectItem value="" className="text-white hover:bg-slate-700">No Category</SelectItem>
+              <SelectItem value="none" className="text-white hover:bg-slate-700">No Category</SelectItem>
               {categories.map((category) => (
                 <SelectItem key={category.id} value={category.id} className="text-white hover:bg-slate-700">
                   {category.name}

@@ -27,7 +27,7 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading 
   
   const [formData, setFormData] = useState({
     name: '',
-    category_id: '',
+    category_id: null as string | null,
     price: 0,
     original_price: 0,
     coupon_code: '',
@@ -57,7 +57,7 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading 
   const resetForm = () => {
     setFormData({
       name: '',
-      category_id: '',
+      category_id: null,
       price: 0,
       original_price: 0,
       coupon_code: '',
@@ -107,7 +107,7 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading 
         pros: formData.pros.split(',').map(f => f.trim()).filter(f => f),
         cons: formData.cons.split(',').map(f => f.trim()).filter(f => f),
         slug: formData.slug || formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''),
-        category_id: formData.category_id || null,
+        category_id: formData.category_id,
         starting_fee: formData.starting_fee > 0 ? formData.starting_fee : null,
       };
 
@@ -138,7 +138,7 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading 
   const handleEdit = (firm: PropFirm) => {
     setFormData({
       name: firm.name,
-      category_id: firm.category_id || '',
+      category_id: firm.category_id,
       price: firm.price,
       original_price: firm.original_price,
       coupon_code: firm.coupon_code || '',
