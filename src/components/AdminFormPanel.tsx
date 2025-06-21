@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,11 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PropFirm } from "../types/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { useCategories } from "../hooks/useCategories";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, Save, Plus } from "lucide-react";
 
 interface AdminFormPanelProps {
-  onAdd: (firm: Partial<PropFirm>) => void;
-  onUpdate: (id: string, firm: Partial<PropFirm>) => void;
+  onAdd: (firm: Partial<PropFirm>) => Promise<any>;
+  onUpdate: (id: string, firm: Partial<PropFirm>) => Promise<any>;
   editingFirm: PropFirm | null;
   setEditingFirm: (firm: PropFirm | null) => void;
   loading?: boolean;
@@ -87,16 +86,16 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading 
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = 'Firm name is required';
     }
     if (!formData.funding_amount.trim()) {
       newErrors.funding_amount = 'Funding amount is required';
     }
     if (formData.price < 0) {
-      newErrors.price = 'Price must be a positive number';
+      newErrors.price = 'Price must be 0 or greater';
     }
     if (formData.original_price < 0) {
-      newErrors.original_price = 'Original price must be a positive number';
+      newErrors.original_price = 'Original price must be 0 or greater';
     }
     if (formData.profit_split < 0 || formData.profit_split > 100) {
       newErrors.profit_split = 'Profit split must be between 0 and 100';
@@ -110,6 +109,15 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading 
     if (formData.trust_rating < 0 || formData.trust_rating > 10) {
       newErrors.trust_rating = 'Trust rating must be between 0 and 10';
     }
+    if (formData.starting_fee < 0) {
+      newErrors.starting_fee = 'Starting fee must be 0 or greater';
+    }
+    if (formData.affiliate_url && !formData.affiliate_url.startsWith('http')) {
+      newErrors.affiliate_url = 'Affiliate URL must start with http:// or https://';
+    }
+    if (formData.logo_url && !formData.logo_url.startsWith('/') && !formData.logo_url.startsWith('http')) {
+      newErrors.logo_url = 'Logo URL must be a valid path or URL';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -121,31 +129,44 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading 
     if (!validateForm()) {
       toast({
         title: "Validation Error",
-        description: "Please fix the errors in the form",
+        description: "Please fix the errors in the form before submitting",
         variant: "destructive",
       });
       return;
     }
 
-    const firmData = {
-      ...formData,
-      features: formData.features.split(',').map(f => f.trim()).filter(f => f),
-      pros: formData.pros.split(',').map(f => f.trim()).filter(f => f),
-      cons: formData.cons.split(',').map(f => f.trim()).filter(f => f),
-      slug: formData.slug || formData.name.toLowerCase().replace(/\s+/g, '-'),
-      category_id: formData.category_id || null,
-      starting_fee: formData.starting_fee || null,
-    };
-
     try {
+      const firmData = {
+        ...formData,
+        features: formData.features.split(',').map(f => f.trim()).filter(f => f),
+        pros: formData.pros.split(',').map(f => f.trim()).filter(f => f),
+        cons: formData.cons.split(',').map(f => f.trim()).filter(f => f),
+        slug: formData.slug || formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''),
+        category_id: formData.category_id || null,
+        starting_fee: formData.starting_fee > 0 ? formData.starting_fee : null,
+      };
+
+      let result;
       if (editingFirm) {
-        await onUpdate(editingFirm.id, firmData);
+        result = await onUpdate(editingFirm.id, firmData);
       } else {
-        await onAdd(firmData);
+        result = await onAdd(firmData);
       }
-      resetForm();
+
+      if (result.success) {
+        resetForm();
+        toast({
+          title: "Success",
+          description: editingFirm ? "Prop firm updated successfully!" : "Prop firm added successfully!",
+        });
+      }
     } catch (error) {
       console.error('Form submission error:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
     }
   };
 
@@ -189,11 +210,23 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading 
   const inputClassName = (fieldName: string) => 
     `bg-slate-700 border-blue-500/20 text-white ${errors[fieldName] ? 'border-red-500' : ''}`;
 
+  const isFormValid = formData.name.trim() && formData.funding_amount.trim();
+
   return (
     <Card className="bg-slate-800/50 border-blue-500/20">
       <CardHeader>
-        <CardTitle className="text-white">
-          {editingFirm ? 'Edit Prop Firm' : 'Add New Prop Firm'}
+        <CardTitle className="text-white flex items-center gap-2">
+          {editingFirm ? (
+            <>
+              <Save className="h-5 w-5" />
+              Edit Prop Firm
+            </>
+          ) : (
+            <>
+              <Plus className="h-5 w-5" />
+              Add New Prop Firm
+            </>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -206,6 +239,7 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading 
               onChange={(e) => setFormData({...formData, name: e.target.value})}
               className={inputClassName('name')}
               disabled={loading}
+              placeholder="Enter firm name"
             />
             {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
           </div>
@@ -218,6 +252,7 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading 
               onChange={(e) => setFormData({...formData, brand: e.target.value})}
               className={inputClassName('brand')}
               disabled={loading}
+              placeholder="Enter brand name"
             />
           </div>
 
@@ -236,12 +271,12 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading 
           <div>
             <Label htmlFor="category_id" className="text-gray-300">Category</Label>
             {categoriesLoading ? (
-              <div className="flex items-center gap-2 text-gray-400">
+              <div className="flex items-center gap-2 text-gray-400 p-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Loading categories...
               </div>
             ) : (
-              <Select value={formData.category_id} onValueChange={(value) => setFormData({...formData, category_id: value})}>
+              <Select value={formData.category_id} onValueChange={(value) => setFormData({...formData, category_id: value})} disabled={loading}>
                 <SelectTrigger className="bg-slate-700 border-blue-500/20 text-white">
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
@@ -259,10 +294,12 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading 
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="price" className="text-gray-300">Price ($)</Label>
+              <Label htmlFor="price" className="text-gray-300">Price ($) *</Label>
               <Input
                 id="price"
                 type="number"
+                min="0"
+                step="0.01"
                 value={formData.price}
                 onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
                 className={inputClassName('price')}
@@ -275,6 +312,8 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading 
               <Input
                 id="original_price"
                 type="number"
+                min="0"
+                step="0.01"
                 value={formData.original_price}
                 onChange={(e) => setFormData({...formData, original_price: Number(e.target.value)})}
                 className={inputClassName('original_price')}
@@ -526,7 +565,7 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading 
             <Button 
               type="submit" 
               className="bg-blue-600 hover:bg-blue-700 text-white"
-              disabled={loading || !formData.name || !formData.funding_amount}
+              disabled={loading || !isFormValid}
             >
               {loading ? (
                 <>
@@ -534,7 +573,19 @@ const AdminFormPanel = ({ onAdd, onUpdate, editingFirm, setEditingFirm, loading 
                   {editingFirm ? 'Updating...' : 'Adding...'}
                 </>
               ) : (
-                editingFirm ? 'Update Firm' : 'Add Firm'
+                <>
+                  {editingFirm ? (
+                    <>
+                      <Save className="mr-2 h-4 w-4" />
+                      Update Firm
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Firm
+                    </>
+                  )}
+                </>
               )}
             </Button>
             {editingFirm && (
