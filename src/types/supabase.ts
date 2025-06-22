@@ -54,11 +54,3 @@ export interface Category {
   description: string | null;
   created_at: string;
 }
-
-export interface Profile {
-  id: string;
-  email: string | null;
-  role: string;
-  created_at: string;
-  updated_at: string;
-}
