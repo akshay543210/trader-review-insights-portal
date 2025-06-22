@@ -11,6 +11,8 @@ export const useAdminOperations = () => {
   const addFirm = async (firmData: Partial<PropFirm>) => {
     setLoading(true);
     try {
+      console.log('Adding firm with data:', firmData);
+      
       // Validate required fields
       if (!firmData.name || !firmData.funding_amount) {
         throw new Error('Name and funding amount are required');
@@ -44,18 +46,27 @@ export const useAdminOperations = () => {
         regulation: firmData.regulation || null,
       };
 
-      const { error } = await supabase
-        .from('prop_firms')
-        .insert(completeData);
+      console.log('Inserting data:', completeData);
 
-      if (error) throw error;
+      const { data, error } = await supabase
+        .from('prop_firms')
+        .insert(completeData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Database error:', error);
+        throw error;
+      }
+
+      console.log('Successfully inserted:', data);
 
       toast({
         title: "Success",
         description: "Prop firm added successfully!",
       });
 
-      return { success: true };
+      return { success: true, data };
     } catch (error) {
       console.error('Error adding firm:', error);
       const errorMessage = error instanceof Error ? error.message : "Failed to add prop firm";
@@ -73,6 +84,8 @@ export const useAdminOperations = () => {
   const updateFirm = async (id: string, updates: Partial<PropFirm>) => {
     setLoading(true);
     try {
+      console.log('Updating firm with id:', id, 'and data:', updates);
+      
       // Ensure arrays are properly formatted
       const formattedUpdates = {
         ...updates,
@@ -81,19 +94,28 @@ export const useAdminOperations = () => {
         cons: Array.isArray(updates.cons) ? updates.cons : [],
       };
 
-      const { error } = await supabase
+      console.log('Formatted updates:', formattedUpdates);
+
+      const { data, error } = await supabase
         .from('prop_firms')
         .update(formattedUpdates)
-        .eq('id', id);
+        .eq('id', id)
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error:', error);
+        throw error;
+      }
+
+      console.log('Successfully updated:', data);
 
       toast({
         title: "Success",
         description: "Prop firm updated successfully!",
       });
 
-      return { success: true };
+      return { success: true, data };
     } catch (error) {
       console.error('Error updating firm:', error);
       const errorMessage = error instanceof Error ? error.message : "Failed to update prop firm";
@@ -111,19 +133,28 @@ export const useAdminOperations = () => {
   const deleteFirm = async (id: string) => {
     setLoading(true);
     try {
-      const { error } = await supabase
+      console.log('Deleting firm with id:', id);
+
+      const { data, error } = await supabase
         .from('prop_firms')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error:', error);
+        throw error;
+      }
+
+      console.log('Successfully deleted:', data);
 
       toast({
         title: "Success",
         description: "Prop firm deleted successfully!",
       });
 
-      return { success: true };
+      return { success: true, data };
     } catch (error) {
       console.error('Error deleting firm:', error);
       const errorMessage = error instanceof Error ? error.message : "Failed to delete prop firm";

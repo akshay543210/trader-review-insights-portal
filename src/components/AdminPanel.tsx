@@ -32,17 +32,22 @@ const AdminPanel = () => {
   }, [operationStatus]);
 
   const handleAdd = async (firmData: Partial<PropFirm>) => {
-    console.log('Adding firm with data:', firmData);
+    console.log('AdminPanel: Adding firm with data:', firmData);
     setOperationStatus({ type: null, message: '' });
     
     try {
       const result = await addFirm(firmData);
+      console.log('AdminPanel: Add result:', result);
+      
       if (result.success) {
         setOperationStatus({ 
           type: 'success', 
           message: `Successfully added "${firmData.name}"` 
         });
-        await refetch();
+        // Force refresh to see new data
+        setTimeout(async () => {
+          await refetch();
+        }, 500);
       } else {
         setOperationStatus({ 
           type: 'error', 
@@ -51,6 +56,7 @@ const AdminPanel = () => {
       }
       return result;
     } catch (error) {
+      console.error('AdminPanel: Add error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       setOperationStatus({ type: 'error', message: errorMessage });
       return { success: false, error };
@@ -58,18 +64,23 @@ const AdminPanel = () => {
   };
 
   const handleUpdate = async (id: string, updates: Partial<PropFirm>) => {
-    console.log('Updating firm with id:', id, 'and data:', updates);
+    console.log('AdminPanel: Updating firm with id:', id, 'and data:', updates);
     setOperationStatus({ type: null, message: '' });
     
     try {
       const result = await updateFirm(id, updates);
+      console.log('AdminPanel: Update result:', result);
+      
       if (result.success) {
         setEditingFirm(null);
         setOperationStatus({ 
           type: 'success', 
           message: `Successfully updated "${updates.name || 'prop firm'}"` 
         });
-        await refetch();
+        // Force refresh to see updated data
+        setTimeout(async () => {
+          await refetch();
+        }, 500);
       } else {
         setOperationStatus({ 
           type: 'error', 
@@ -78,6 +89,7 @@ const AdminPanel = () => {
       }
       return result;
     } catch (error) {
+      console.error('AdminPanel: Update error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       setOperationStatus({ type: 'error', message: errorMessage });
       return { success: false, error };
@@ -85,17 +97,22 @@ const AdminPanel = () => {
   };
 
   const handleDelete = async (id: string) => {
-    console.log('Deleting firm with id:', id);
+    console.log('AdminPanel: Deleting firm with id:', id);
     setOperationStatus({ type: null, message: '' });
     
     try {
       const result = await deleteFirm(id);
+      console.log('AdminPanel: Delete result:', result);
+      
       if (result.success) {
         setOperationStatus({ 
           type: 'success', 
           message: 'Successfully deleted prop firm' 
         });
-        await refetch();
+        // Force refresh to see deleted data
+        setTimeout(async () => {
+          await refetch();
+        }, 500);
       } else {
         setOperationStatus({ 
           type: 'error', 
@@ -104,6 +121,7 @@ const AdminPanel = () => {
       }
       return result;
     } catch (error) {
+      console.error('AdminPanel: Delete error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       setOperationStatus({ type: 'error', message: errorMessage });
       return { success: false, error };
@@ -111,12 +129,13 @@ const AdminPanel = () => {
   };
 
   const handleEdit = (firm: PropFirm) => {
-    console.log('Editing firm:', firm);
+    console.log('AdminPanel: Editing firm:', firm);
     setEditingFirm(firm);
     setOperationStatus({ type: null, message: '' });
   };
 
   const handleRefresh = async () => {
+    console.log('AdminPanel: Manual refresh requested');
     setOperationStatus({ type: null, message: '' });
     await refetch();
   };

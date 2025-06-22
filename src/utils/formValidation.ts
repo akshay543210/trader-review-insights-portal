@@ -6,12 +6,15 @@ export interface ValidationErrors {
 export const validateAdminForm = (formData: any): ValidationErrors => {
   const errors: ValidationErrors = {};
 
-  if (!formData.name.trim()) {
+  // Required fields validation
+  if (!formData.name || !formData.name.trim()) {
     errors.name = 'Firm name is required';
   }
-  if (!formData.funding_amount.trim()) {
+  if (!formData.funding_amount || !formData.funding_amount.trim()) {
     errors.funding_amount = 'Funding amount is required';
   }
+
+  // Numeric validations
   if (formData.price < 0) {
     errors.price = 'Price must be 0 or greater';
   }
@@ -30,15 +33,43 @@ export const validateAdminForm = (formData: any): ValidationErrors => {
   if (formData.trust_rating < 0 || formData.trust_rating > 10) {
     errors.trust_rating = 'Trust rating must be between 0 and 10';
   }
-  if (formData.starting_fee < 0) {
+  if (formData.starting_fee && formData.starting_fee < 0) {
     errors.starting_fee = 'Starting fee must be 0 or greater';
   }
-  if (formData.affiliate_url && !formData.affiliate_url.startsWith('http')) {
-    errors.affiliate_url = 'Affiliate URL must start with http:// or https://';
+
+  // URL validations
+  if (formData.affiliate_url && formData.affiliate_url.trim() && !isValidUrl(formData.affiliate_url)) {
+    errors.affiliate_url = 'Affiliate URL must be a valid URL starting with http:// or https://';
   }
-  if (formData.logo_url && !formData.logo_url.startsWith('/') && !formData.logo_url.startsWith('http')) {
-    errors.logo_url = 'Logo URL must be a valid path or URL';
+  if (formData.logo_url && formData.logo_url.trim() && !isValidLogoUrl(formData.logo_url)) {
+    errors.logo_url = 'Logo URL must be a valid path starting with / or a valid URL';
+  }
+
+  // String length validations
+  if (formData.name && formData.name.length > 255) {
+    errors.name = 'Firm name must be less than 255 characters';
+  }
+  if (formData.description && formData.description.length > 1000) {
+    errors.description = 'Description must be less than 1000 characters';
   }
 
   return errors;
+};
+
+const isValidUrl = (url: string): boolean => {
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
+const isValidLogoUrl = (url: string): boolean => {
+  // Allow relative paths starting with /
+  if (url.startsWith('/')) {
+    return true;
+  }
+  // Allow full URLs
+  return isValidUrl(url);
 };
