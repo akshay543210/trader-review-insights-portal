@@ -1,82 +1,139 @@
 
 import { useState } from "react";
 import Navbar from "../components/Navbar";
-import Hero from "../components/Hero";
-import FilterSidebar from "../components/FilterSidebar";
-import FilteredFirmsList from "../components/FilteredFirmsList";
 import Footer from "../components/Footer";
+import PropFirmCard from "../components/PropFirmCard";
+import FilterSidebar from "../components/FilterSidebar";
 import { usePropFirms } from "../hooks/useSupabaseData";
+import { PropFirm } from "../types/supabase";
 
 const AllPropFirms = () => {
-  const { propFirms, loading } = usePropFirms();
-  const [sortBy, setSortBy] = useState<'price' | 'review' | 'trust'>('review');
-  const [filters, setFilters] = useState({
-    minPrice: 0,
-    maxPrice: 1000,
-    minReviewScore: 0,
-    maxReviewScore: 5,
-    minTrustRating: 0,
-    maxTrustRating: 5,
-    searchTerm: '',
+  const { propFirms, loading, error } = usePropFirms();
+  const [filteredFirms, setFilteredFirms] = useState<PropFirm[]>([]);
+  const [sortBy, setSortBy] = useState<'price' | 'review' | 'trust' | 'payout'>('review');
+  const [isAdminMode, setIsAdminMode] = useState(false);
+
+  // Update filtered firms when propFirms changes
+  useState(() => {
+    setFilteredFirms(propFirms);
   });
 
-  const filteredFirms = propFirms
-    .filter(firm => {
-      const matchesPrice = firm.price >= filters.minPrice && firm.price <= filters.maxPrice;
-      const matchesReview = firm.review_score >= filters.minReviewScore && firm.review_score <= filters.maxReviewScore;
-      const matchesTrust = firm.trust_rating >= filters.minTrustRating && firm.trust_rating <= filters.maxTrustRating;
-      const matchesSearch = firm.name.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-                           firm.brand?.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-                           firm.description?.toLowerCase().includes(filters.searchTerm.toLowerCase());
-      
-      return matchesPrice && matchesReview && matchesTrust && matchesSearch;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'price':
-          return a.price - b.price;
-        case 'review':
-          return b.review_score - a.review_score;
-        case 'trust':
-          return b.trust_rating - a.trust_rating;
-        default:
-          return 0;
-      }
-    });
+  const handleFilterChange = (filters: any) => {
+    let filtered = [...propFirms];
+
+    // Apply category filter
+    if (filters.category !== 'all') {
+      filtered = filtered.filter(firm => firm.category_id === filters.category);
+    }
+
+    // Apply price range filter
+    filtered = filtered.filter(firm => 
+      firm.price >= filters.priceRange[0] && firm.price <= filters.priceRange[1]
+    );
+
+    // Apply rating filter
+    filtered = filtered.filter(firm => firm.review_score >= filters.minRating);
+
+    // Apply trust filter
+    filtered = filtered.filter(firm => firm.trust_rating >= filters.minTrust);
+
+    // Apply search filter
+    if (filters.searchTerm) {
+      filtered = filtered.filter(firm => 
+        firm.name.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
+        (firm.brand && firm.brand.toLowerCase().includes(filters.searchTerm.toLowerCase()))
+      );
+    }
+
+    setFilteredFirms(filtered);
+  };
+
+  const sortedFirms = [...filteredFirms].sort((a, b) => {
+    switch (sortBy) {
+      case 'price':
+        return a.price - b.price;
+      case 'review':
+        return b.review_score - a.review_score;
+      case 'trust':
+        return b.trust_rating - a.trust_rating;
+      case 'payout':
+        return b.payout_rate - a.payout_rate;
+      default:
+        return 0;
+    }
+  });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+        <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <div className="text-white text-lg">Loading prop firms...</div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+        <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <div className="text-red-400 text-lg">Error: {error}</div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-      <Navbar />
-      <Hero />
+      <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
       
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">All Prop Firms</h1>
-          <p className="text-gray-300 text-lg">
-            Explore our complete database of prop trading firms
-          </p>
+          <h1 className="text-4xl font-bold text-white mb-4">All Prop Trading Firms</h1>
+          <p className="text-xl text-gray-300">Compare and find the perfect prop firm for your trading needs</p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="lg:w-1/4">
             <FilterSidebar 
-              filters={filters} 
-              setFilters={setFilters}
-              propFirms={propFirms}
+              onFilterChange={handleFilterChange}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
             />
           </div>
           
           <div className="lg:w-3/4">
-            <FilteredFirmsList 
-              firms={filteredFirms}
-              sortBy={sortBy}
-              setSortBy={setSortBy}
-              loading={loading}
-            />
+            <div className="mb-6">
+              <p className="text-gray-300">
+                Showing {sortedFirms.length} of {propFirms.length} prop firms
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {sortedFirms.map((firm, index) => (
+                <PropFirmCard key={firm.id} firm={firm} index={index} />
+              ))}
+            </div>
+
+            {sortedFirms.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-400 text-lg">
+                  No prop firms found matching your criteria.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
-
+      
       <Footer />
     </div>
   );
