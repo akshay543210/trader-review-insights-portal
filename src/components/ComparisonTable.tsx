@@ -6,11 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { PropFirm } from "../types/supabase";
 
 interface ComparisonTableProps {
-  selectedFirms: PropFirm[];
+  firms: PropFirm[];
   onRemoveFirm: (firmId: string) => void;
 }
 
-const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) => {
+const ComparisonTable = ({ firms, onRemoveFirm }: ComparisonTableProps) => {
   const categoryColors = {
     beginner: 'bg-green-500/20 text-green-400 border-green-500/30',
     intermediate: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
@@ -29,7 +29,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
               <thead>
                 <tr className="border-b border-slate-700">
                   <th className="text-left py-4 px-2 text-gray-400">Criteria</th>
-                  {selectedFirms.map((firm) => (
+                  {firms.map((firm) => (
                     <th key={firm.id} className="text-center py-4 px-2 min-w-48">
                       <div className="flex items-center justify-center gap-2 mb-2">
                         <span className="text-white font-bold">{firm.name}</span>
@@ -52,7 +52,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
               <tbody>
                 <tr className="border-b border-slate-700">
                   <td className="py-4 px-2 text-gray-300 font-medium">Price</td>
-                  {selectedFirms.map((firm) => (
+                  {firms.map((firm) => (
                     <td key={firm.id} className="py-4 px-2 text-center">
                       <div className="text-blue-400 font-bold">${firm.price}</div>
                       <div className="text-sm text-gray-400 line-through">${firm.original_price}</div>
@@ -62,7 +62,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
 
                 <tr className="border-b border-slate-700">
                   <td className="py-4 px-2 text-gray-300 font-medium">Review Score</td>
-                  {selectedFirms.map((firm) => (
+                  {firms.map((firm) => (
                     <td key={firm.id} className="py-4 px-2 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <Star className="h-4 w-4 text-yellow-400" />
@@ -74,7 +74,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
 
                 <tr className="border-b border-slate-700">
                   <td className="py-4 px-2 text-gray-300 font-medium">Trust Rating</td>
-                  {selectedFirms.map((firm) => (
+                  {firms.map((firm) => (
                     <td key={firm.id} className="py-4 px-2 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <Shield className="h-4 w-4 text-green-400" />
@@ -86,7 +86,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
 
                 <tr className="border-b border-slate-700">
                   <td className="py-4 px-2 text-gray-300 font-medium">Profit Split</td>
-                  {selectedFirms.map((firm) => (
+                  {firms.map((firm) => (
                     <td key={firm.id} className="py-4 px-2 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <DollarSign className="h-4 w-4 text-blue-400" />
@@ -98,7 +98,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
 
                 <tr className="border-b border-slate-700">
                   <td className="py-4 px-2 text-gray-300 font-medium">Payout Rate</td>
-                  {selectedFirms.map((firm) => (
+                  {firms.map((firm) => (
                     <td key={firm.id} className="py-4 px-2 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <TrendingUp className="h-4 w-4 text-purple-400" />
@@ -110,7 +110,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
 
                 <tr className="border-b border-slate-700">
                   <td className="py-4 px-2 text-gray-300 font-medium">Funding Amount</td>
-                  {selectedFirms.map((firm) => (
+                  {firms.map((firm) => (
                     <td key={firm.id} className="py-4 px-2 text-center">
                       <span className="text-white font-semibold">{firm.funding_amount}</span>
                     </td>
@@ -119,7 +119,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
 
                 <tr className="border-b border-slate-700">
                   <td className="py-4 px-2 text-gray-300 font-medium">Coupon Code</td>
-                  {selectedFirms.map((firm) => (
+                  {firms.map((firm) => (
                     <td key={firm.id} className="py-4 px-2 text-center">
                       <div className="bg-blue-500/10 border border-blue-500/20 rounded px-2 py-1">
                         <span className="text-blue-400 font-semibold text-sm">{firm.coupon_code || 'N/A'}</span>
@@ -130,7 +130,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
 
                 <tr>
                   <td className="py-4 px-2 text-gray-300 font-medium">Actions</td>
-                  {selectedFirms.map((firm) => (
+                  {firms.map((firm) => (
                     <td key={firm.id} className="py-4 px-2 text-center">
                       <div className="space-y-2">
                         <Button 
@@ -144,7 +144,7 @@ const ComparisonTable = ({ selectedFirms, onRemoveFirm }: ComparisonTableProps) 
                           size="sm"
                           variant="outline"
                           className="w-full border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-slate-900"
-                          onClick={() => window.location.href = `/propfirm/${firm.id}`}
+                          onClick={() => window.location.href = `/firms/${firm.id}`}
                         >
                           View Details
                         </Button>

@@ -182,7 +182,11 @@ const PropFirmDetail = () => {
           <CardContent>
             {showReviewForm && (
               <div className="mb-6">
-                <WriteReviewForm firmId={firm.id} />
+                <WriteReviewForm 
+                  firmId={firm.id} 
+                  firmName={firm.name}
+                  onClose={() => setShowReviewForm(false)}
+                />
               </div>
             )}
             
