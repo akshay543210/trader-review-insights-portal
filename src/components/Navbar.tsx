@@ -1,31 +1,15 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-interface NavbarProps {
-  isAdminMode: boolean;
-  setIsAdminMode: (mode: boolean) => void;
-}
-
-const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
+const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
 
   // Get prop firms from location state or empty array
   const propFirms = location.state?.propFirms || [];
-
-  // Check admin status from localStorage
-  useEffect(() => {
-    const adminStatus = localStorage.getItem("isAdmin");
-    setIsAdmin(adminStatus === "true");
-  }, []);
-
-  const handleAdminToggle = () => {
-    setIsAdminMode(!isAdminMode);
-  };
 
   return (
     <nav className="bg-slate-900/95 backdrop-blur-sm border-b border-blue-500/20 sticky top-0 z-50">
@@ -66,35 +50,6 @@ const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
           </div>
 
           <div className="hidden md:flex md:items-center md:space-x-4">
-            {isAdmin && (
-              <Button
-                variant="ghost"
-                onClick={handleAdminToggle}
-                className={`text-gray-300 hover:text-blue-400 ${isAdminMode ? 'bg-blue-600/20 text-blue-400' : ''}`}
-              >
-                {isAdminMode ? 'User View' : 'Admin Panel'}
-              </Button>
-            )}
-            {isAdmin && (
-              <Link to="/admin-dashboard-2024">
-                <Button
-                  variant="outline"
-                  className="border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-slate-900"
-                >
-                  Full Admin
-                </Button>
-              </Link>
-            )}
-            {!isAdmin && (
-              <Link to="/admin-login">
-                <Button
-                  variant="outline"
-                  className="border-gray-400 text-gray-400 hover:bg-gray-700"
-                >
-                  Admin Login
-                </Button>
-              </Link>
-            )}
             <Button className="bg-blue-600 hover:bg-blue-700 text-white">
               Write Review
             </Button>
@@ -138,37 +93,6 @@ const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
             >
               Compare
             </Link>
-            {isAdmin && (
-              <div className="border-t border-gray-700 pt-2">
-                <Button
-                  variant="ghost"
-                  onClick={handleAdminToggle}
-                  className="w-full text-left text-gray-300 hover:text-blue-400 justify-start"
-                >
-                  {isAdminMode ? 'User View' : 'Admin Panel'}
-                </Button>
-                <Link to="/admin-dashboard-2024" className="block">
-                  <Button
-                    variant="ghost"
-                    className="w-full text-left text-purple-400 hover:text-purple-300 justify-start"
-                  >
-                    Full Admin Dashboard
-                  </Button>
-                </Link>
-              </div>
-            )}
-            {!isAdmin && (
-              <div className="border-t border-gray-700 pt-2">
-                <Link to="/admin-login" className="block">
-                  <Button
-                    variant="ghost"
-                    className="w-full text-left text-gray-400 hover:text-gray-300 justify-start"
-                  >
-                    Admin Login
-                  </Button>
-                </Link>
-              </div>
-            )}
           </div>
         </div>
       )}
