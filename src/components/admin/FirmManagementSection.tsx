@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAdminOperations } from '@/hooks/useAdminOperations';
 import { PropFirm } from '@/types/supabase';
 import { Edit, Trash2, Plus } from 'lucide-react';
-import { AdminFormPanel } from '../AdminFormPanel';
+import AdminFormPanel from '../AdminFormPanel';
 
 interface FirmManagementSectionProps {
   title: string;
@@ -23,7 +23,7 @@ export const FirmManagementSection: React.FC<FirmManagementSectionProps> = ({
 }) => {
   const [editingFirm, setEditingFirm] = useState<PropFirm | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const { deleteFirm, loading } = useAdminOperations();
+  const { addFirm, updateFirm, deleteFirm, loading } = useAdminOperations();
 
   const filteredFirms = filterFn ? firms.filter(filterFn) : firms;
 
@@ -52,6 +52,22 @@ export const FirmManagementSection: React.FC<FirmManagementSectionProps> = ({
     onRefresh();
   };
 
+  const handleAdd = async (firmData: Partial<PropFirm>) => {
+    const result = await addFirm(firmData);
+    if (result.success) {
+      handleFormClose();
+    }
+    return result;
+  };
+
+  const handleUpdate = async (id: string, updates: Partial<PropFirm>) => {
+    const result = await updateFirm(id, updates);
+    if (result.success) {
+      handleFormClose();
+    }
+    return result;
+  };
+
   return (
     <Card className="bg-slate-800/50 border-blue-500/20">
       <CardHeader>
@@ -71,8 +87,11 @@ export const FirmManagementSection: React.FC<FirmManagementSectionProps> = ({
         {(editingFirm || showAddForm) && (
           <div className="mb-6">
             <AdminFormPanel
-              firm={editingFirm}
-              onClose={handleFormClose}
+              onAdd={handleAdd}
+              onUpdate={handleUpdate}
+              editingFirm={editingFirm}
+              setEditingFirm={setEditingFirm}
+              loading={loading}
             />
           </div>
         )}
