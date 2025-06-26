@@ -1,144 +1,70 @@
+import { useReviewOperations } from '@/hooks/useReviewOperations';
+import { usePropFirms } from '@/hooks/useSupabaseData';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Star, ThumbsUp } from "lucide-react";
-import { useReviews } from "@/hooks/useSupabaseData";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+const AdminReviewsList = ({ onEdit }: any) => {
+  const { reviews, deleteReview, loading, fetchReviews } = useReviewOperations();
+  const { propFirms } = usePropFirms();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-const Reviews = () => {
-  const { reviews, loading, error } = useReviews();
-  const [displayCount, setDisplayCount] = useState(10);
-  const [isAdminMode, setIsAdminMode] = useState(false);
-
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`h-4 w-4 ${
-          i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'
-        }`}
-      />
-    ));
+  const getFirmName = (firm_id: string) => {
+    const firm = propFirms.find((f: any) => f.id === firm_id);
+    return firm ? firm.name : 'Unknown';
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-        <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
-        <div className="container mx-auto px-4 py-12">
-          <div className="text-center text-white">Loading reviews...</div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  const handleDelete = async (id: string) => {
+    setDeletingId(id);
+    await deleteReview(id);
+    setDeletingId(null);
+    fetchReviews();
+  };
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-        <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
-        <div className="container mx-auto px-4 py-12">
-          <div className="text-center text-red-400">Error loading reviews: {error}</div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  // Filter out reviews for MyForexFunds and The Funded Trader
+  const filteredReviews = reviews.filter((review: any) => {
+    const firmName = getFirmName(review.firm_id);
+    return firmName !== 'MyForexFunds' && firmName !== 'The Funded Trader';
+  });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-      <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
-      
-      <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">PropFirm Reviews</h1>
-          <p className="text-gray-300 text-lg">
-            Read authentic reviews from real traders about their experiences
-          </p>
-        </div>
-
-        <div className="grid gap-6 max-w-4xl mx-auto">
-          {reviews.slice(0, displayCount).map((review) => (
-            <Card key={review.id} className="bg-slate-800/50 border-blue-500/20">
-              <CardHeader>
-                <div className="flex justify-between items-start">
+    <Card className="bg-slate-800/50 border-blue-500/20">
+      <CardHeader>
+        <CardTitle className="text-white text-xl mb-2">All Reviews</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <div className="text-gray-400">Loading reviews...</div>
+        ) : filteredReviews.length === 0 ? (
+          <div className="text-gray-400">No reviews found.</div>
+        ) : (
+          <div className="space-y-4">
+            {filteredReviews.map((review: any) => (
+              <div key={review.id} className="bg-slate-700 rounded p-4 flex flex-col gap-2">
+                <div className="flex justify-between items-center">
                   <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <Link 
-                        to={`/firms/${review.prop_firms?.slug || review.firm_id}`}
-                        className="text-blue-400 hover:text-blue-300 font-semibold text-lg"
-                      >
-                        {review.prop_firms?.name || 'Unknown Firm'}
-                      </Link>
-                      {review.is_verified && (
-                        <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                          Verified
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex">{renderStars(review.rating)}</div>
-                      <span className="text-gray-400 text-sm">
-                        by {review.reviewer_name}
-                      </span>
-                    </div>
+                    <div className="text-blue-400 font-semibold">{getFirmName(review.firm_id)}</div>
+                    <div className="text-white font-bold text-lg">{review.title}</div>
+                    <div className="text-yellow-400">Rating: {review.rating} / 5</div>
+                    <div className="text-gray-300 text-sm">By: {review.reviewer_name}</div>
                   </div>
-                  <div className="text-gray-400 text-sm">
-                    {new Date(review.created_at).toLocaleDateString()}
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => onEdit(review)}>
+                      Edit
+                    </Button>
+                    <Button size="sm" variant="destructive" onClick={() => handleDelete(review.id)} disabled={deletingId === review.id}>
+                      {deletingId === review.id ? 'Deleting...' : 'Delete'}
+                    </Button>
                   </div>
                 </div>
-              </CardHeader>
-              
-              <CardContent>
-                {review.title && (
-                  <h3 className="text-white font-semibold text-lg mb-3">
-                    {review.title}
-                  </h3>
-                )}
-                <p className="text-gray-300 mb-4 leading-relaxed">
-                  {review.content}
-                </p>
-                
-                <div className="flex items-center gap-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-gray-400 hover:text-white"
-                  >
-                    <ThumbsUp className="h-4 w-4 mr-1" />
-                    Helpful ({review.helpful_count})
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {reviews.length > displayCount && (
-          <div className="text-center mt-8">
-            <Button
-              onClick={() => setDisplayCount(prev => prev + 10)}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Load More Reviews
-            </Button>
+                <div className="text-gray-200 mt-2">{review.content}</div>
+              </div>
+            ))}
           </div>
         )}
-
-        {reviews.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-400 text-lg">No reviews found.</p>
-          </div>
-        )}
-      </div>
-
-      <Footer />
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
-export default Reviews;
+export default AdminReviewsList; 
