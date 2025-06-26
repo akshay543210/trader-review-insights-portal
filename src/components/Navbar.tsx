@@ -115,4 +115,3 @@ const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
 };
 
 export default Navbar;
-
