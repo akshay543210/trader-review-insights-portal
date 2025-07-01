@@ -1,5 +1,5 @@
 
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { 
@@ -11,8 +11,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
-  useSidebar
+  SidebarTrigger
 } from '@/components/ui/sidebar';
 import { LogOut, Search, DollarSign, Trophy, Shield } from 'lucide-react';
 
@@ -39,20 +38,9 @@ const adminMenuItems = [
 
 export const AdminSidebar = () => {
   const { signOut, profile } = useAuth();
-  const { state } = useSidebar();
-  const location = useLocation();
-  const currentPath = location.pathname;
-
-  const isCollapsed = state === 'collapsed';
-  const isActive = (path: string) => currentPath === path;
-  const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "bg-blue-600 text-white font-medium" : "hover:bg-slate-700 text-gray-300";
 
   return (
-    <Sidebar
-      className={isCollapsed ? "w-14" : "w-60"}
-      collapsible="icon"
-    >
+    <Sidebar collapsible="icon" className="w-60">
       <SidebarTrigger className="m-2 self-end" />
       
       <SidebarContent className="bg-slate-800 border-r border-blue-500/20">
@@ -62,28 +50,34 @@ export const AdminSidebar = () => {
             <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
               <Shield className="h-5 w-5 text-white" />
             </div>
-            {!isCollapsed && (
-              <div>
-                <h2 className="font-bold text-white">Admin Panel</h2>
-                <p className="text-xs text-gray-400">{profile?.email}</p>
-              </div>
-            )}
+            <div>
+              <h2 className="font-bold text-white">Admin Panel</h2>
+              <p className="text-xs text-gray-400">{profile?.email}</p>
+            </div>
           </div>
         </div>
 
         {/* Navigation */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-gray-400">
-            {!isCollapsed && "Firm Management"}
+            Firm Management
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {adminMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <NavLink to={item.url} end className={getNavCls}>
+                    <NavLink 
+                      to={item.url} 
+                      end 
+                      className={({ isActive }) =>
+                        isActive 
+                          ? "bg-blue-600 text-white font-medium" 
+                          : "hover:bg-slate-700 text-gray-300"
+                      }
+                    >
                       <item.icon className="mr-2 h-4 w-4" />
-                      {!isCollapsed && <span>{item.title}</span>}
+                      <span>{item.title}</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -97,11 +91,10 @@ export const AdminSidebar = () => {
           <Button
             onClick={signOut}
             variant="outline"
-            size={isCollapsed ? "icon" : "default"}
             className="w-full border-red-400 text-red-400 hover:bg-red-400 hover:text-white"
           >
-            <LogOut className={isCollapsed ? "h-4 w-4" : "mr-2 h-4 w-4"} />
-            {!isCollapsed && "Logout"}
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
           </Button>
         </div>
       </SidebarContent>

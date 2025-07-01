@@ -134,29 +134,6 @@ export const usePropFirms = (category?: string) => {
     fetchPropFirms();
   }, [fetchPropFirms]);
 
-  // Set up real-time subscription
-  useEffect(() => {
-    const channel = supabase
-      .channel('propfirms_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'propfirms',
-          filter: category ? `category=eq.${category}` : undefined,
-        },
-        () => {
-          fetchPropFirms();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [fetchPropFirms, category]);
-
   return {
     propFirms,
     loading,

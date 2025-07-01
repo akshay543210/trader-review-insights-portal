@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -11,9 +11,9 @@ import { Shield } from "lucide-react";
 
 const Index = () => {
   const [isAdminMode, setIsAdminMode] = useState(false);
-  const { propFirms: exploreFirms } = usePropFirms('explore');
-  const { propFirms: cheapFirms } = usePropFirms('cheap');
-  const { propFirms: topFirms } = usePropFirms('top');
+  const { propFirms: exploreFirms, loading: exploreLoading } = usePropFirms('explore');
+  const { propFirms: cheapFirms, loading: cheapLoading } = usePropFirms('cheap');
+  const { propFirms: topFirms, loading: topLoading } = usePropFirms('top');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
@@ -37,19 +37,22 @@ const Index = () => {
         <PropFirmSection 
           title="Top Rated Prop Firms" 
           propFirms={topFirms.slice(0, 3)}
-          linkTo="/top-firms" 
+          linkTo="/top-firms"
+          loading={topLoading}
         />
         
         <PropFirmSection 
           title="Cheapest Prop Firms" 
           propFirms={cheapFirms.slice(0, 3)}
-          linkTo="/cheap-firms" 
+          linkTo="/cheap-firms"
+          loading={cheapLoading}
         />
         
         <PropFirmSection 
           title="All Prop Firms" 
           propFirms={exploreFirms.slice(0, 3)}
-          linkTo="/propfirms" 
+          linkTo="/propfirms"
+          loading={exploreLoading}
         />
       </main>
       
