@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu } from "lucide-react";
@@ -10,21 +11,10 @@ interface NavbarProps {
 
 const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
 
   // Get prop firms from location state or empty array
   const propFirms = location.state?.propFirms || [];
-
-  // Check admin status from localStorage
-  useEffect(() => {
-    const adminStatus = localStorage.getItem("isAdmin");
-    setIsAdmin(adminStatus === "true");
-  }, []);
-
-  const handleAdminToggle = () => {
-    setIsAdminMode(!isAdminMode);
-  };
 
   return (
     <nav className="bg-slate-900/95 backdrop-blur-sm border-b border-blue-500/20 sticky top-0 z-50">
@@ -62,10 +52,6 @@ const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
                 Compare
               </Link>
             </div>
-          </div>
-
-          <div className="hidden md:flex md:items-center md:space-x-4">
-            {/* Removed Admin Login button */}
           </div>
 
           <div className="md:hidden flex items-center">
@@ -106,7 +92,6 @@ const Navbar = ({ isAdminMode, setIsAdminMode }: NavbarProps) => {
             >
               Compare
             </Link>
-            {/* Removed Admin Login button from mobile */}
           </div>
         </div>
       )}
