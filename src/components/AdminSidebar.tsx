@@ -39,18 +39,19 @@ const adminMenuItems = [
 
 export const AdminSidebar = () => {
   const { signOut, profile } = useAuth();
-  const { collapsed } = useSidebar();
+  const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
 
+  const isCollapsed = state === 'collapsed';
   const isActive = (path: string) => currentPath === path;
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
     isActive ? "bg-blue-600 text-white font-medium" : "hover:bg-slate-700 text-gray-300";
 
   return (
     <Sidebar
-      className={collapsed ? "w-14" : "w-60"}
-      collapsible
+      className={isCollapsed ? "w-14" : "w-60"}
+      collapsible="icon"
     >
       <SidebarTrigger className="m-2 self-end" />
       
@@ -61,7 +62,7 @@ export const AdminSidebar = () => {
             <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
               <Shield className="h-5 w-5 text-white" />
             </div>
-            {!collapsed && (
+            {!isCollapsed && (
               <div>
                 <h2 className="font-bold text-white">Admin Panel</h2>
                 <p className="text-xs text-gray-400">{profile?.email}</p>
@@ -73,7 +74,7 @@ export const AdminSidebar = () => {
         {/* Navigation */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-gray-400">
-            {!collapsed && "Firm Management"}
+            {!isCollapsed && "Firm Management"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -82,7 +83,7 @@ export const AdminSidebar = () => {
                   <SidebarMenuButton asChild>
                     <NavLink to={item.url} end className={getNavCls}>
                       <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
+                      {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -96,11 +97,11 @@ export const AdminSidebar = () => {
           <Button
             onClick={signOut}
             variant="outline"
-            size={collapsed ? "icon" : "default"}
+            size={isCollapsed ? "icon" : "default"}
             className="w-full border-red-400 text-red-400 hover:bg-red-400 hover:text-white"
           >
-            <LogOut className={collapsed ? "h-4 w-4" : "mr-2 h-4 w-4"} />
-            {!collapsed && "Logout"}
+            <LogOut className={isCollapsed ? "h-4 w-4" : "mr-2 h-4 w-4"} />
+            {!isCollapsed && "Logout"}
           </Button>
         </div>
       </SidebarContent>

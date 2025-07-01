@@ -7,7 +7,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 const AdminLayout = () => {
   return (
     <ProtectedRoute requireAdmin>
-      <SidebarProvider collapsedWidth={56}>
+      <SidebarProvider>
         <div className="min-h-screen flex w-full">
           <AdminSidebar />
           <main className="flex-1">

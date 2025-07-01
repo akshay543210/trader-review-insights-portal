@@ -5,15 +5,15 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Hero from "../components/Hero";
 import PropFirmSection from "../components/PropFirmSection";
-import { usePropFirms, useCheapestFirms, useTopRatedFirms } from "../hooks/useSupabaseData";
+import { usePropFirms } from "../hooks/usePropFirms";
 import { Button } from "@/components/ui/button";
 import { Shield } from "lucide-react";
 
 const Index = () => {
   const [isAdminMode, setIsAdminMode] = useState(false);
-  const { propFirms } = usePropFirms();
-  const { propFirms: cheapestFirms } = useCheapestFirms();
-  const { propFirms: topRatedFirms } = useTopRatedFirms();
+  const { propFirms: exploreFirms } = usePropFirms('explore');
+  const { propFirms: cheapFirms } = usePropFirms('cheap');
+  const { propFirms: topFirms } = usePropFirms('top');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
@@ -36,19 +36,19 @@ const Index = () => {
         
         <PropFirmSection 
           title="Top Rated Prop Firms" 
-          propFirms={topRatedFirms}
+          propFirms={topFirms.slice(0, 3)}
           linkTo="/top-firms" 
         />
         
         <PropFirmSection 
           title="Cheapest Prop Firms" 
-          propFirms={cheapestFirms}
+          propFirms={cheapFirms.slice(0, 3)}
           linkTo="/cheap-firms" 
         />
         
         <PropFirmSection 
           title="All Prop Firms" 
-          propFirms={propFirms.slice(0, 8)}
+          propFirms={exploreFirms.slice(0, 3)}
           linkTo="/propfirms" 
         />
       </main>

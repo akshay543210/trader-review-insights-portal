@@ -13,7 +13,6 @@ import Comparison from "./pages/Comparison";
 import CheapFirms from "./pages/CheapFirms";
 import TopFirms from "./pages/TopFirms";
 import PropFirmDetail from "./pages/PropFirmDetail";
-import Reviews from "./pages/Reviews";
 import NotFound from "./pages/NotFound";
 
 // Import new auth and admin pages
@@ -40,7 +39,6 @@ const App = () => (
             <Route path="/cheap-firms" element={<CheapFirms />} />
             <Route path="/top-firms" element={<TopFirms />} />
             <Route path="/firms/:id" element={<PropFirmDetail />} />
-            <Route path="/reviews" element={<Reviews />} />
             
             {/* Auth routes */}
             <Route path="/auth" element={<Auth />} />

@@ -20,7 +20,14 @@ export const usePropFirms = (category?: string) => {
 
       const { data, error } = await query;
       if (error) throw error;
-      setPropFirms(data || []);
+      
+      // Type assertion to ensure category is properly typed
+      const typedData = (data || []).map(firm => ({
+        ...firm,
+        category: firm.category as 'explore' | 'cheap' | 'top'
+      }));
+      
+      setPropFirms(typedData);
     } catch (error) {
       console.error('Error fetching prop firms:', error);
       toast({
@@ -42,12 +49,18 @@ export const usePropFirms = (category?: string) => {
         .single();
 
       if (error) throw error;
-      setPropFirms(prev => [data, ...prev]);
+      
+      const typedData = {
+        ...data,
+        category: data.category as 'explore' | 'cheap' | 'top'
+      };
+      
+      setPropFirms(prev => [typedData, ...prev]);
       toast({
         title: "Success",
         description: "Prop firm added successfully",
       });
-      return { success: true, data };
+      return { success: true, data: typedData };
     } catch (error) {
       console.error('Error adding prop firm:', error);
       toast({
@@ -69,12 +82,18 @@ export const usePropFirms = (category?: string) => {
         .single();
 
       if (error) throw error;
-      setPropFirms(prev => prev.map(firm => firm.id === id ? data : firm));
+      
+      const typedData = {
+        ...data,
+        category: data.category as 'explore' | 'cheap' | 'top'
+      };
+      
+      setPropFirms(prev => prev.map(firm => firm.id === id ? typedData : firm));
       toast({
         title: "Success",
         description: "Prop firm updated successfully",
       });
-      return { success: true, data };
+      return { success: true, data: typedData };
     } catch (error) {
       console.error('Error updating prop firm:', error);
       toast({
