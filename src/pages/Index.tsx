@@ -1,61 +1,33 @@
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import Hero from "../components/Hero";
 import PropFirmSection from "../components/PropFirmSection";
-import { usePropFirms } from "../hooks/usePropFirms";
-import { Button } from "@/components/ui/button";
-import { Shield } from "lucide-react";
+import Footer from "../components/Footer";
+import { usePropFirms } from "../hooks/useSupabaseData";
+import { PropFirm } from "../types/supabase";
 
 const Index = () => {
+  const { propFirms, loading } = usePropFirms();
+  const [sortBy, setSortBy] = useState<'price' | 'review' | 'trust'>('review');
   const [isAdminMode, setIsAdminMode] = useState(false);
-  const { propFirms: exploreFirms, loading: exploreLoading } = usePropFirms('explore');
-  const { propFirms: cheapFirms, loading: cheapLoading } = usePropFirms('cheap');
-  const { propFirms: topFirms, loading: topLoading } = usePropFirms('top');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [searchResults, setSearchResults] = useState<PropFirm[] | undefined>(undefined);
+
+  // Optionally, implement search/filter logic here
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
-      
-      <main>
-        <Hero />
-        
-        {/* Admin Access Section */}
-        <section className="py-8 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto text-center">
-            <Link to="/auth">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                <Shield className="mr-2 h-4 w-4" />
-                Admin Access
-              </Button>
-            </Link>
-          </div>
-        </section>
-        
-        <PropFirmSection 
-          title="Top Rated Prop Firms" 
-          propFirms={topFirms.slice(0, 3)}
-          linkTo="/top-firms"
-          loading={topLoading}
+      <Hero />
+      <div className="container mx-auto px-4 py-8">
+        <PropFirmSection
+          propFirms={searchResults || propFirms}
+          loading={loading}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
         />
-        
-        <PropFirmSection 
-          title="Cheapest Prop Firms" 
-          propFirms={cheapFirms.slice(0, 3)}
-          linkTo="/cheap-firms"
-          loading={cheapLoading}
-        />
-        
-        <PropFirmSection 
-          title="All Prop Firms" 
-          propFirms={exploreFirms.slice(0, 3)}
-          linkTo="/propfirms"
-          loading={exploreLoading}
-        />
-      </main>
-      
+      </div>
       <Footer />
     </div>
   );

@@ -1,66 +1,31 @@
-
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import PropFirmCard from "../components/PropFirmCard";
-import FilterSidebar from "../components/FilterSidebar";
 import { usePropFirms } from "../hooks/useSupabaseData";
-import { PropFirm } from "../types/supabase";
 
 const AllPropFirms = () => {
-  const { propFirms, loading, error } = usePropFirms();
-  const [filteredFirms, setFilteredFirms] = useState<PropFirm[]>([]);
-  const [sortBy, setSortBy] = useState<'price' | 'review' | 'trust' | 'payout'>('review');
+  const [sortBy, setSortBy] = useState<'price' | 'review' | 'trust'>('review');
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'beginner' | 'intermediate' | 'pro'>('all');
   const [isAdminMode, setIsAdminMode] = useState(false);
+  const { propFirms, loading, error } = usePropFirms();
 
-  // Update filtered firms when propFirms changes
-  useState(() => {
-    setFilteredFirms(propFirms);
-  });
+  // Filter by category
+  const filteredFirms = selectedCategory === 'all'
+    ? propFirms
+    : propFirms.filter(firm => {
+        if (selectedCategory === 'beginner') return firm.price < 200;
+        if (selectedCategory === 'intermediate') return firm.price >= 200 && firm.price <= 500;
+        if (selectedCategory === 'pro') return firm.price > 500;
+        return true;
+      });
 
-  const handleFilterChange = (filters: any) => {
-    let filtered = [...propFirms];
-
-    // Apply category filter
-    if (filters.category !== 'all') {
-      filtered = filtered.filter(firm => firm.category_id === filters.category);
-    }
-
-    // Apply price range filter
-    filtered = filtered.filter(firm => 
-      firm.price >= filters.priceRange[0] && firm.price <= filters.priceRange[1]
-    );
-
-    // Apply rating filter
-    filtered = filtered.filter(firm => firm.review_score >= filters.minRating);
-
-    // Apply trust filter
-    filtered = filtered.filter(firm => firm.trust_rating >= filters.minTrust);
-
-    // Apply search filter
-    if (filters.searchTerm) {
-      filtered = filtered.filter(firm => 
-        firm.name.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-        (firm.brand && firm.brand.toLowerCase().includes(filters.searchTerm.toLowerCase()))
-      );
-    }
-
-    setFilteredFirms(filtered);
-  };
-
+  // Sort by selected option
   const sortedFirms = [...filteredFirms].sort((a, b) => {
-    switch (sortBy) {
-      case 'price':
-        return a.price - b.price;
-      case 'review':
-        return b.review_score - a.review_score;
-      case 'trust':
-        return b.trust_rating - a.trust_rating;
-      case 'payout':
-        return b.payout_rate - a.payout_rate;
-      default:
-        return 0;
-    }
+    if (sortBy === 'price') return a.price - b.price;
+    if (sortBy === 'trust') return (b.trust_rating ?? 0) - (a.trust_rating ?? 0);
+    // Default: review
+    return (b.review_score ?? 0) - (a.review_score ?? 0);
   });
 
   if (loading) {
@@ -69,7 +34,7 @@ const AllPropFirms = () => {
         <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center py-12">
-            <div className="text-white text-lg">Loading prop firms...</div>
+            <div className="text-white text-lg">Loading all prop firms...</div>
           </div>
         </div>
         <Footer />
@@ -94,46 +59,42 @@ const AllPropFirms = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       <Navbar isAdminMode={isAdminMode} setIsAdminMode={setIsAdminMode} />
-      
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">All Prop Trading Firms</h1>
-          <p className="text-xl text-gray-300">Compare and find the perfect prop firm for your trading needs</p>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="lg:w-1/4">
-            <FilterSidebar 
-              onFilterChange={handleFilterChange}
-              sortBy={sortBy}
-              setSortBy={setSortBy}
-            />
-          </div>
-          
-          <div className="lg:w-3/4">
-            <div className="mb-6">
-              <p className="text-gray-300">
-                Showing {sortedFirms.length} of {propFirms.length} prop firms
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {sortedFirms.map((firm, index) => (
-                <PropFirmCard key={firm.id} firm={firm} index={index} />
-              ))}
-            </div>
-
-            {sortedFirms.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-gray-400 text-lg">
-                  No prop firms found matching your criteria.
-                </p>
-              </div>
-            )}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+          <h1 className="text-4xl font-bold text-white">Explore All Prop Firms</h1>
+          <div className="flex gap-4">
+            <select
+              value={selectedCategory}
+              onChange={e => setSelectedCategory(e.target.value as any)}
+              className="px-3 py-2 rounded bg-slate-800 text-white border border-blue-500/20"
+            >
+              <option value="all">All</option>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="pro">Pro</option>
+            </select>
+            <select
+              value={sortBy}
+              onChange={e => setSortBy(e.target.value as any)}
+              className="px-3 py-2 rounded bg-slate-800 text-white border border-blue-500/20"
+            >
+              <option value="review">Top Rated</option>
+              <option value="price">Lowest Price</option>
+              <option value="trust">Trust Score</option>
+            </select>
           </div>
         </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {sortedFirms.map((firm, index) => (
+            <PropFirmCard key={firm.id} firm={firm} index={index} />
+          ))}
+        </div>
+        {sortedFirms.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-400 text-lg">No prop firms found.</p>
+          </div>
+        )}
       </div>
-      
       <Footer />
     </div>
   );

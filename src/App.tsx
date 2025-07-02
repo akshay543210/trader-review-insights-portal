@@ -21,6 +21,7 @@ import AdminLayout from "./pages/AdminLayout";
 import ExploreFirms from "./pages/admin/ExploreFirms";
 import CheapFirmsAdmin from "./pages/admin/CheapFirms";
 import TopFirmsAdmin from "./pages/admin/TopFirms";
+import Reviews from "./pages/Reviews";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,6 +50,9 @@ const App = () => (
             
             {/* Auth routes */}
             <Route path="/auth" element={<Auth />} />
+            
+            {/* Reviews route */}
+            <Route path="/reviews" element={<Reviews />} />
             
             {/* Admin routes */}
             <Route path="/admin" element={<AdminLayout />}>
